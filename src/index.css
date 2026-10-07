@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-status-green: var(--status-green);
+  --color-status-green-soft: var(--status-green-soft);
+  --color-status-yellow: var(--status-yellow);
+  --color-status-yellow-soft: var(--status-yellow-soft);
+  --color-status-orange: var(--status-orange);
+  --color-status-orange-soft: var(--status-orange-soft);
+  --color-status-red: var(--status-red);
+  --color-status-red-soft: var(--status-red-soft);
+  --color-status-gray: var(--status-gray);
+  --color-status-gray-soft: var(--status-gray-soft);
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 9999px;
+}
+
+:root {
+  --bg: #F6F4EF;
+  --surface: #FFFFFF;
+  --surface-2: #FBFAF7;
+  --ink: #16181D;
+  --muted: #6B7280;
+  --hairline: #E7E4DC;
+  --accent: #0F766E;
+  --accent-soft: #E6F2F0;
+
+  --status-green: #16A34A;
+  --status-green-soft: #DCFCE7;
+  --status-yellow: #CA8A04;
+  --status-yellow-soft: #FEF9C3;
+  --status-orange: #EA580C;
+  --status-orange-soft: #FFEDD5;
+  --status-red: #DC2626;
+  --status-red-soft: #FEE2E2;
+  --status-gray: #9CA3AF;
+  --status-gray-soft: #F3F4F6;
+
+  --shadow-popover: 0 4px 20px -2px rgba(22, 24, 29, 0.08);
+}
+
+.dark {
+  --bg: #0E0F11;
+  --surface: #16181B;
+  --surface-2: #1B1E22;
+  --ink: #ECEDEE;
+  --muted: #8B9098;
+  --hairline: #26292E;
+  --accent: #2DD4BF;
+  --accent-soft: rgba(45, 212, 191, 0.12);
+
+  --status-green: #22C55E;
+  --status-green-soft: rgba(34, 197, 94, 0.14);
+  --status-yellow: #EAB308;
+  --status-yellow-soft: rgba(234, 179, 8, 0.14);
+  --status-orange: #F97316;
+  --status-orange-soft: rgba(249, 115, 22, 0.14);
+  --status-red: #EF4444;
+  --status-red-soft: rgba(239, 68, 68, 0.14);
+  --status-gray: #9CA3AF;
+  --status-gray-soft: rgba(156, 163, 175, 0.14);
+
+  --shadow-popover: 0 4px 24px -2px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Control Room Tabular Num styling for mono */
+.font-mono, [data-mono] {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" on, "zero" on;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars matching Control Room hairline */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
