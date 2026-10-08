@@ -75,7 +75,8 @@ export function DataTable<T>({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-[12px] border border-hairline bg-surface">
+      {/* Desktop & Tablet Table view (hidden on small mobile < 640px) */}
+      <div className="hidden sm:block overflow-x-auto rounded-[12px] border border-hairline bg-surface">
         <table className="w-full text-left border-collapse">
           {/* Sticky Header */}
           <thead className="sticky top-0 bg-surface-2 border-b border-hairline z-10">
@@ -140,6 +141,49 @@ export function DataTable<T>({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Stacked Cards view (< 640px) */}
+      <div className="block sm:hidden space-y-3">
+        {data.length === 0 ? (
+          <div className="p-6 text-center text-[13px] text-muted italic rounded-[12px] border border-hairline bg-surface">
+            {emptyMessage}
+          </div>
+        ) : (
+          data.map((item) => (
+            <div
+              key={keyExtractor(item)}
+              onClick={() => onRowClick?.(item)}
+              className={`p-4 rounded-[12px] border border-hairline bg-surface space-y-2.5 transition-colors ${
+                onRowClick ? 'cursor-pointer hover:border-muted/50 active:bg-surface-2' : ''
+              }`}
+            >
+              {columns.map((col) => {
+                const content = col.render
+                  ? col.render(item)
+                  : ((item as Record<string, unknown>)[col.key] as React.ReactNode);
+
+                return (
+                  <div
+                    key={col.key}
+                    className="flex items-center justify-between text-[13px] gap-2"
+                  >
+                    <span className="text-[11px] font-mono uppercase text-muted tracking-wider shrink-0">
+                      {col.header}
+                    </span>
+                    <div
+                      className={`text-right text-ink ${
+                        col.mono ? 'font-mono tabular-nums' : ''
+                      }`}
+                    >
+                      {content}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

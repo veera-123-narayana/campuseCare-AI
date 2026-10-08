@@ -108,3 +108,40 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* Accessibility: Universal focus rings for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Accessibility: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Clean Print media support for A4 documentation */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #16181D !important;
+  }
+  aside,
+  nav,
+  header,
+  .print\:hidden {
+    display: none !important;
+  }
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+}

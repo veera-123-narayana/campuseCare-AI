@@ -6,6 +6,9 @@ import {
   CheckCircle2,
   X,
   ExternalLink,
+  Wifi,
+  WifiOff,
+  RefreshCw,
 } from 'lucide-react';
 import { useCampus } from '../../context/CampusContext';
 import { ThemeToggle } from './ThemeToggle';
@@ -25,6 +28,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   const {
     dataMode,
     toggleDataMode,
+    connectionStatus,
+    reconnectConnection,
     activeAlertCount,
     alerts,
     setIsCommandPaletteOpen,
@@ -118,6 +123,45 @@ export const TopBar: React.FC<TopBarProps> = ({
             }`}
           />
           <span>{dataMode}</span>
+        </button>
+
+        {/* Backend Connection Indicator (Connected / Reconnecting / Offline) */}
+        <button
+          type="button"
+          onClick={reconnectConnection}
+          title={
+            connectionStatus === 'Connected'
+              ? 'Realtime Telemetry Stream: Connected'
+              : connectionStatus === 'Reconnecting'
+              ? 'Attempting reconnection to campus event gateway...'
+              : 'Gateway Offline: Click to retry connection (last known telemetry cached)'
+          }
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] border text-[11px] font-mono uppercase font-semibold transition-colors cursor-pointer select-none ${
+            connectionStatus === 'Connected'
+              ? 'bg-status-green-soft text-status-green border-status-green/30'
+              : connectionStatus === 'Reconnecting'
+              ? 'bg-status-yellow-soft text-status-yellow border-status-yellow/30'
+              : 'bg-status-red-soft text-status-red border-status-red/30'
+          }`}
+        >
+          {connectionStatus === 'Connected' && (
+            <>
+              <span className="w-1.5 h-1.5 rounded-full bg-status-green animate-pulse" />
+              <span>Connected</span>
+            </>
+          )}
+          {connectionStatus === 'Reconnecting' && (
+            <>
+              <RefreshCw className="w-3 h-3 animate-spin text-status-yellow" />
+              <span>Reconnecting</span>
+            </>
+          )}
+          {connectionStatus === 'Offline' && (
+            <>
+              <WifiOff className="w-3 h-3 text-status-red" />
+              <span>Offline (Cached)</span>
+            </>
+          )}
         </button>
 
         {/* Live Clock */}

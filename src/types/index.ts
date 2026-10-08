@@ -114,6 +114,18 @@ export interface CampusEvent {
   note?: string; // "demo data"
 }
 
+export type AlertStatus = 'New' | 'Acknowledged' | 'In progress' | 'Resolved';
+
+export type AlertSourceCategory = 'Vision' | 'IoT' | 'Timetable' | 'User';
+
+export interface AlertHistoryEntry {
+  id: string;
+  timestamp: string;
+  status: AlertStatus;
+  actor: string;
+  note?: string;
+}
+
 export interface Alert {
   id: string;
   roomId: string;
@@ -128,11 +140,25 @@ export interface Alert {
   timeWindow?: string;
   gracePeriodMinutes: number;
   priority: PriorityLevel;
-  status: 'ACTIVE' | 'ACKNOWLEDGED' | 'RESOLVED';
+  status: 'ACTIVE' | 'ACKNOWLEDGED' | 'RESOLVED' | AlertStatus;
+  triageStatus?: AlertStatus;
   source: DataSourceType;
+  sourceCategory?: AlertSourceCategory;
   timestamp: string;
+  age?: string;
   energyImpactKw: number;
   acknowledged?: boolean;
+  assignee?: string;
+  repeatCount?: number;
+  repeatWindow?: string;
+  contextSnapshot?: {
+    occupancyObserved: number;
+    occupancyExpected: number;
+    temperature: number;
+    powerKw: number;
+    timeSlot: string;
+  };
+  history?: AlertHistoryEntry[];
   note: string; // "demo data"
 }
 
@@ -235,3 +261,49 @@ export interface RoomRecord {
   lastUpdated: string;
   note?: string; // "demo data"
 }
+
+export interface AssistantToolCall {
+  id: string;
+  tool: string;
+  resultSummary: string;
+  recordsCount: number;
+  source: DataSourceType;
+  records?: Array<{
+    id: string;
+    title: string;
+    subtitle?: string;
+    category?: string;
+    badge?: string;
+    status?: string;
+    metrics?: Record<string, string | number>;
+    link?: string;
+  }>;
+}
+
+export interface AssistantSourceRecord {
+  id: string;
+  title: string;
+  subtitle?: string;
+  category: 'Room' | 'Alert' | 'Device' | 'Timetable' | 'Energy' | 'Sensor';
+  source: DataSourceType;
+  details?: string;
+  link?: string;
+  badge?: string;
+  status?: string;
+  metrics?: Record<string, string | number>;
+}
+
+export interface AssistantResponse {
+  answer: string;
+  toolCalls: AssistantToolCall[];
+  sourceRecords: AssistantSourceRecord[];
+  suggestedActions: string[];
+  relevantRooms: string[];
+  source: DataSourceType;
+  degradedMode?: boolean;
+  note: string;
+}
+
+// Re-export contract types
+export * from './contract';
+
