@@ -32,6 +32,8 @@ import {
 import { SourceBadge } from '../components/ui/SourceBadge';
 import { PriorityPill } from '../components/ui/PriorityPill';
 import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/ui/EmptyState';
+import { formatTime } from '../utils/formatTime';
 
 interface AssistantPageProps {
   onNavigate: (path: string) => void;
@@ -63,6 +65,7 @@ const SUGGESTED_PROMPTS = [
 
 export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
   const { dataMode } = useCampus();
+  const isLiveMode = import.meta.env.VITE_DATA_MODE === 'http';
 
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -234,11 +237,14 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
       console.error('Failed to query campus assistant:', err);
       setIsQuerying(false);
       setIsStreaming(false);
+      const isHttpMode = import.meta.env.VITE_DATA_MODE === 'http';
       const errorMsg: ChatMessage = {
         id: `err-${Date.now()}`,
         sender: 'assistant',
-        text: 'Telemetry query failed. Data stream could not be synchronized with edge nodes.',
-        timestamp: new Date().toTimeString().split(' ')[0],
+        text: isHttpMode
+          ? 'Assistant not available in live mode'
+          : 'Telemetry query failed. Data stream could not be synchronized with edge nodes.',
+        timestamp: formatTime(new Date().toISOString()),
         error: true,
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -253,6 +259,33 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
     }
   };
 
+  if (isLiveMode) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-hairline">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
+                Campus Intelligence / Operational Query Agent
+              </span>
+              <SourceBadge source="SIMULATED" size="sm" />
+            </div>
+            <h1 className="text-[28px] font-semibold tracking-tight text-ink leading-tight">
+              Operational Assistant
+            </h1>
+          </div>
+        </div>
+
+        <div className="py-16">
+          <EmptyState
+            icon={<Sparkles className="w-6 h-6 text-muted" />}
+            title="Assistant not available in live mode"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* 1. Header with Mode Controls */}
@@ -262,7 +295,7 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
             <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
               Operational Intelligence / Context Engine
             </span>
-            <SourceBadge source={degradedMode ? 'SIMULATED' : 'LIVE'} size="sm" />
+            <SourceBadge source="SIMULATED" size="sm" />
             <span className="text-[11px] font-mono text-muted">demo data</span>
           </div>
           <h1 className="text-[28px] font-semibold tracking-tight text-ink leading-tight">
@@ -405,7 +438,7 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
                             {msg.text}
                           </p>
                           <span className="font-mono text-[10px] text-muted text-right block tabular-nums">
-                            {msg.timestamp}
+                            {formatTime(msg.timestamp)}
                           </span>
                         </div>
                       </div>
@@ -439,7 +472,7 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
                             </span>
                           )}
                         </div>
-                        <span className="text-muted tabular-nums">{msg.timestamp}</span>
+                        <span className="text-muted tabular-nums">{formatTime(msg.timestamp)}</span>
                       </div>
 
                       {/* Main Message Text */}
@@ -541,7 +574,7 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({ onNavigate }) => {
                   <div className="mr-auto max-w-sm rounded-[12px] border border-hairline bg-surface p-4 space-y-2">
                     <div className="flex items-center gap-2 text-[11px] font-mono text-muted">
                       <span>CAMPUS DATA ENGINE</span>
-                      <SourceBadge source="LIVE" size="sm" />
+                      <SourceBadge source="SIMULATED" size="sm" />
                     </div>
                     <div className="flex items-center gap-1.5 py-1" aria-label="Thinking">
                       <span className="w-2 h-2 rounded-full bg-muted/60" />

@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   ReferenceArea,
 } from 'recharts';
+import { DataSourceType } from '../../types';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
 
@@ -21,11 +22,13 @@ interface OccupancyPoint {
 
 interface Occupancy24hChartProps {
   currentObserved: number;
+  source?: DataSourceType;
   className?: string;
 }
 
 export const Occupancy24hChart: React.FC<Occupancy24hChartProps> = ({
   currentObserved = 0,
+  source = 'SIMULATED',
   className = '',
 }) => {
   // Generate 24 hours of telemetry curve
@@ -64,7 +67,7 @@ export const Occupancy24hChart: React.FC<Occupancy24hChartProps> = ({
               <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
                 Temporal Analysis
               </span>
-              <SourceBadge source="LIVE" size="sm" />
+              <SourceBadge source={source} size="sm" />
             </div>
             <CardTitle className="text-[18px]">
               24-Hour Room Occupancy Profile

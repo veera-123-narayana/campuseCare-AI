@@ -3,6 +3,7 @@ import { Layers, ArrowRight, Info, Eye } from 'lucide-react';
 import { FloorRoomNode, OperationalStatus } from '../../types';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
+import { EmptyState } from '../ui/EmptyState';
 
 interface FloorPlanCardProps {
   nodes: FloorRoomNode[];
@@ -77,6 +78,31 @@ export const FloorPlanCard: React.FC<FloorPlanCardProps> = ({
   const [hoveredNode, setHoveredNode] = useState<FloorRoomNode | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  if (!nodes || nodes.length === 0) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-muted" />
+              <CardTitle className="text-[20px]">Floor Plan Overview</CardTitle>
+            </div>
+            <SourceBadge source="SIMULATED" size="sm" />
+          </div>
+          <CardDescription>
+            CSE Block Level 2 architectural occupancy telemetry overlay.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="py-16">
+          <EmptyState
+            icon={<Layers className="w-6 h-6 text-muted" />}
+            title="No data yet. This feed is not built."
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setMousePos({
@@ -102,7 +128,7 @@ export const FloorPlanCard: React.FC<FloorPlanCardProps> = ({
                 <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
                   Physical Spatial Map
                 </span>
-                <SourceBadge source="PI" size="sm" />
+                <SourceBadge source={nodes[0]?.source || 'SIMULATED'} size="sm" />
               </div>
               <CardTitle className="text-[20px]">
                 CSE Block · Level 2 Floor Status
@@ -265,13 +291,16 @@ export const FloorPlanCard: React.FC<FloorPlanCardProps> = ({
                   <span className="font-mono font-bold text-[13px]">
                     Room {hoveredNode.number}
                   </span>
-                  <span
-                    className={`font-mono text-[10px] px-1.5 py-0.2 rounded border font-medium uppercase ${
-                      statusColors[hoveredNode.status].badgeBg
-                    }`}
-                  >
-                    {hoveredNode.priority}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <SourceBadge source={hoveredNode.source || 'SIMULATED'} size="sm" />
+                    <span
+                      className={`font-mono text-[10px] px-1.5 py-0.2 rounded border font-medium uppercase ${
+                        statusColors[hoveredNode.status].badgeBg
+                      }`}
+                    >
+                      {hoveredNode.priority}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="text-muted leading-tight font-medium">

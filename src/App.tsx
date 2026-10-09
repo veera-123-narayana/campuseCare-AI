@@ -21,6 +21,7 @@ import { DemoPage } from './pages/DemoPage';
 import { DesignSpecimenPage } from './pages/DesignSpecimenPage';
 import { SimulationBanner } from './components/ui/SimulationBanner';
 import { useCampus } from './context/CampusContext';
+import { AlertTriangle } from 'lucide-react';
 
 const SCENARIO_KEY_MAP: Record<string, string> = {
   '1': 'normal-class',
@@ -35,7 +36,7 @@ const SCENARIO_KEY_MAP: Record<string, string> = {
 };
 
 function AppContent() {
-  const { runScenario, isSimulationMode } = useCampus();
+  const { runScenario, isSimulationMode, backendOffline } = useCampus();
   const [currentPath, setCurrentPath] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       return window.location.pathname || '/';
@@ -127,6 +128,14 @@ function AppContent() {
 
       {/* Main Column */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* Backend Offline Banner in HTTP mode */}
+        {backendOffline && (
+          <div className="bg-status-red text-white px-4 py-2 text-center text-[13px] font-mono font-semibold flex items-center justify-center gap-2 shadow-sm shrink-0 z-50">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>Backend offline. Showing no live data.</span>
+          </div>
+        )}
+
         {/* Simulation Mode Banner across top of pages when active */}
         <SimulationBanner currentPath={currentPath} onNavigate={navigateTo} />
 

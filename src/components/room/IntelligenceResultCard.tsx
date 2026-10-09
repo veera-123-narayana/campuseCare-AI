@@ -29,19 +29,23 @@ export interface DecisionState {
   observedMotion: string;
   observedPower: number;
   observedTemp: number;
+  source?: DataSourceType;
 }
 
 interface IntelligenceResultCardProps {
   decision: DecisionState;
+  source?: DataSourceType;
   onVerifySchedule?: () => void;
   className?: string;
 }
 
 export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
   decision,
+  source,
   onVerifySchedule,
   className = '',
 }) => {
+  const cardSource = source || decision.source || 'SIMULATED';
   const isReview = decision.priority === 'ORANGE';
   const isCritical = decision.priority === 'RED';
   const isNormal = decision.priority === 'GREEN';
@@ -74,9 +78,9 @@ export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
             <div className="px-2.5 py-1 rounded-[6px] bg-surface-2 border border-hairline flex items-center gap-1.5 text-[12px] font-mono">
               <span className="text-muted">Vision Confidence:</span>
               <span className="text-ink font-bold tabular-nums">
-                {decision.confidence}%
+                {decision.confidence != null ? `${Math.round(decision.confidence)}%` : '--'}
               </span>
-              <SourceBadge source="LIVE" size="sm" />
+              <SourceBadge source={cardSource} size="sm" />
             </div>
             <PriorityPill priority={decision.priority} size="md" />
           </div>
@@ -140,17 +144,17 @@ export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
               <div className="space-y-1.5 pt-1">
                 <div className="flex justify-between">
                   <span className="text-muted">Subject:</span>
-                  <span className="font-semibold text-ink">{decision.expectedSubject}</span>
+                  <span className="font-semibold text-ink">{decision.expectedSubject || '--'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Expected Count:</span>
                   <span className="font-mono text-ink font-semibold">
-                    {decision.expectedCount} students
+                    {decision.expectedCount != null ? `${decision.expectedCount} students` : '--'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Time Window:</span>
-                  <span className="font-mono text-ink">{decision.expectedTime}</span>
+                  <span className="font-mono text-ink">{decision.expectedTime || '--'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Grace Threshold:</span>
@@ -165,7 +169,7 @@ export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
                 <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
                   Observed State (Hardware Sensors)
                 </span>
-                <SourceBadge source="PI" size="sm" />
+                <SourceBadge source={cardSource} size="sm" />
               </div>
 
               <div className="space-y-1.5 pt-1">
@@ -173,27 +177,29 @@ export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
                   <span className="text-muted">Vision Headcount:</span>
                   <span
                     className={`font-mono font-bold ${
-                      decision.expectedCount > 0 && decision.observedCount === 0
+                      (decision.expectedCount ?? 0) > 0 && decision.observedCount === 0
                         ? 'text-status-orange'
                         : 'text-ink'
                     }`}
                   >
-                    {decision.observedCount} people detected
+                    {decision.observedCount != null ? `${decision.observedCount} people detected` : '--'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Dual PIR Motion:</span>
-                  <span className="font-mono text-ink">{decision.observedMotion}</span>
+                  <span className="font-mono text-ink">{decision.observedMotion || '--'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Active Circuit Load:</span>
                   <span className="font-mono text-ink font-semibold">
-                    {decision.observedPower.toFixed(2)} kW
+                    {decision.observedPower != null ? `${decision.observedPower.toFixed(2)} kW` : '--'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Ambient Temp:</span>
-                  <span className="font-mono text-ink">{decision.observedTemp.toFixed(1)} °C</span>
+                  <span className="font-mono text-ink">
+                    {decision.observedTemp != null ? `${decision.observedTemp.toFixed(1)} °C` : '--'}
+                  </span>
                 </div>
               </div>
             </div>

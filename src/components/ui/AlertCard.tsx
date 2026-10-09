@@ -4,6 +4,7 @@ import { Alert } from '../../types';
 import { PriorityPill } from './PriorityPill';
 import { SourceBadge } from './SourceBadge';
 import { Button } from './Button';
+import { formatTime } from '../../utils/formatTime';
 
 export interface AlertCardProps {
   alert: Alert;
@@ -52,7 +53,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({
           <SourceBadge source={alert.source} size="sm" />
           <span className="font-mono text-[11px] text-muted tabular-nums flex items-center gap-1">
             <Clock className="w-3 h-3 text-muted" />
-            {alert.timestamp}
+            {formatTime(alert.timestamp)}
           </span>
         </div>
       </div>

@@ -92,7 +92,7 @@ export interface SensorReading {
   deviceId: string;
   source: SensorSource;
   roomId: string;
-  type: 'PIR_MOTION' | 'CAMERA_HEADCOUNT' | 'POWER_CURRENT' | 'TEMPERATURE' | 'DOOR_CONTACT';
+  type: 'PIR_MOTION' | 'CAMERA_HEADCOUNT' | 'POWER_CURRENT' | 'TEMPERATURE' | 'DOOR_CONTACT' | 'AIR_QUALITY';
   value: number | string | boolean;
   unit: string;
   timestamp: string;
@@ -169,9 +169,9 @@ export interface EdgeDevice {
   id: string;
   deviceId: string;
   name: string;
-  type: 'PI_CAMERA' | 'PI_GATEWAY' | 'ESP32_PIR' | 'CURRENT_TRANSFORMER';
+  type: 'PI_CAMERA' | 'PI_GATEWAY' | 'ESP32_PIR' | 'CURRENT_TRANSFORMER' | 'DOOR_CONTACT' | 'AIR_QUALITY';
   roomId: string;
-  status: 'ONLINE' | 'OFFLINE' | 'DEGRADED';
+  status: 'ONLINE' | 'OFFLINE' | 'DEGRADED' | 'NOT_INSTALLED';
   ipAddress: string;
   lastPing: string;
   firmwareVersion: string;

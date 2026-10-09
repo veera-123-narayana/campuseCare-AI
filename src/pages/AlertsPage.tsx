@@ -34,6 +34,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { Toast, ToastType } from '../components/ui/Toast';
 import { AlertDetailSheet } from '../components/alerts/AlertDetailSheet';
 import { TableDensity } from '../components/ui/DataTable';
+import { formatTime } from '../utils/formatTime';
 
 interface AlertsPageProps {
   onNavigate: (path: string) => void;
@@ -340,7 +341,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ onNavigate }) => {
             <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
               Operational Intelligence / Triage Queue
             </span>
-            <SourceBadge source="LIVE" size="sm" />
+            <SourceBadge source="SIMULATED" size="sm" />
             <span className="text-[11px] font-mono text-muted">demo data</span>
           </div>
           <h1 className="text-[28px] font-semibold tracking-tight text-ink leading-tight">
@@ -651,7 +652,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ onNavigate }) => {
 
                       {/* Age */}
                       <td className={`px-4 ${paddingY} font-mono text-[12px] text-muted tabular-nums`}>
-                        {alert.age || alert.timestamp}
+                        {alert.age || formatTime(alert.timestamp)}
                       </td>
 
                       {/* Status */}
@@ -753,7 +754,7 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ onNavigate }) => {
                       <span>·</span>
                       <SourceBadge source={alert.source} size="sm" />
                     </div>
-                    <span>{alert.age || alert.timestamp}</span>
+                    <span>{alert.age || formatTime(alert.timestamp)}</span>
                   </div>
                 </div>
               );

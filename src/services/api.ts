@@ -120,7 +120,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 0,
     motionDetected: false,
     energyKw: 0.1,
-    source: 'PI',
+    source: 'SIMULATED',
     classState: 'VACANT_SETBACK',
     note: 'demo data',
   },
@@ -139,7 +139,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 0,
     motionDetected: false,
     energyKw: 1.8,
-    source: 'PI',
+    source: 'SIMULATED',
     classState: 'UNSCHEDULED_OCCUPIED',
     note: 'demo data',
   },
@@ -163,7 +163,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 48,
     motionDetected: true,
     energyKw: 2.2,
-    source: 'LIVE',
+    source: 'SIMULATED',
     classState: 'ACTIVE_CONFIRMED',
     note: 'demo data',
   },
@@ -187,7 +187,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 42,
     motionDetected: true,
     energyKw: 2.1,
-    source: 'LIVE',
+    source: 'SIMULATED',
     classState: 'ACTIVE_CONFIRMED',
     note: 'demo data',
   },
@@ -211,7 +211,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 0,
     motionDetected: false,
     energyKw: 3.4,
-    source: 'LIVE',
+    source: 'SIMULATED',
     classState: 'UNCONFIRMED_ACTIVITY',
     note: 'demo data',
   },
@@ -249,7 +249,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 1,
     motionDetected: true,
     energyKw: 4.8,
-    source: 'LIVE',
+    source: 'SIMULATED',
     classState: 'DISPATCH_ALERT',
     note: 'demo data',
   },
@@ -273,7 +273,7 @@ let roomsStore: Room[] = [
     observedHeadcount: 26,
     motionDetected: true,
     energyKw: 3.2,
-    source: 'PI',
+    source: 'SIMULATED',
     classState: 'ACTIVE_CONFIRMED',
     note: 'demo data',
   },
@@ -360,7 +360,7 @@ let alertsStore: Alert[] = [
     priority: 'ORANGE',
     status: 'ACTIVE',
     triageStatus: 'New',
-    source: 'LIVE',
+    source: 'SIMULATED',
     sourceCategory: 'Vision',
     timestamp: '10:18:22',
     age: '4m ago',
@@ -417,7 +417,7 @@ let alertsStore: Alert[] = [
     priority: 'RED',
     status: 'ACTIVE',
     triageStatus: 'New',
-    source: 'LIVE',
+    source: 'SIMULATED',
     sourceCategory: 'IoT',
     timestamp: '10:14:15',
     age: '14m ago',
@@ -467,7 +467,7 @@ let alertsStore: Alert[] = [
     priority: 'YELLOW',
     status: 'ACKNOWLEDGED',
     triageStatus: 'Acknowledged',
-    source: 'PI',
+    source: 'SIMULATED',
     sourceCategory: 'IoT',
     timestamp: '10:05:40',
     age: '28m ago',
@@ -563,7 +563,7 @@ let alertsStore: Alert[] = [
     priority: 'YELLOW',
     status: 'ACTIVE',
     triageStatus: 'New',
-    source: 'PI',
+    source: 'SIMULATED',
     sourceCategory: 'Vision',
     timestamp: '09:35:12',
     age: '52m ago',
@@ -604,7 +604,7 @@ let alertsStore: Alert[] = [
     priority: 'RED',
     status: 'ACTIVE',
     triageStatus: 'In progress',
-    source: 'LIVE',
+    source: 'SIMULATED',
     sourceCategory: 'User',
     timestamp: '09:14:15',
     age: '1h ago',
@@ -652,7 +652,7 @@ let alertsStore: Alert[] = [
     priority: 'GREEN',
     status: 'RESOLVED',
     triageStatus: 'Resolved',
-    source: 'LIVE',
+    source: 'SIMULATED',
     sourceCategory: 'Timetable',
     timestamp: '09:20:00',
     age: '2h ago',
@@ -693,10 +693,10 @@ let devicesStore: EdgeDevice[] = [
     type: 'PI_CAMERA',
     roomId: 'room-204',
     status: 'ONLINE',
-    ipAddress: '10.24.12.204',
+    ipAddress: '--',
     lastPing: '2s ago',
     firmwareVersion: 'v2.4.1-edge',
-    source: 'PI',
+    source: 'SIMULATED',
     note: 'demo data',
   },
   {
@@ -706,49 +706,62 @@ let devicesStore: EdgeDevice[] = [
     type: 'ESP32_PIR',
     roomId: 'room-204',
     status: 'ONLINE',
-    ipAddress: '10.24.12.205',
+    ipAddress: '--',
     lastPing: '1s ago',
     firmwareVersion: 'v1.1.0-esp',
-    source: 'ESP32',
+    source: 'SIMULATED',
     note: 'demo data',
   },
   {
     id: 'dev-3',
     deviceId: 'CT-SUB-204',
-    name: 'Current Transformer Power Meter',
+    name: 'CT Power Clamp (Not installed)',
     type: 'CURRENT_TRANSFORMER',
     roomId: 'room-204',
-    status: 'ONLINE',
-    ipAddress: '10.24.10.42',
-    lastPing: '3s ago',
-    firmwareVersion: 'v3.0.0-modbus',
-    source: 'PI',
+    status: 'NOT_INSTALLED',
+    ipAddress: '--',
+    lastPing: 'Not installed',
+    firmwareVersion: 'v3.0.0-sim',
+    source: 'SIMULATED',
     note: 'demo data',
   },
   {
     id: 'dev-4',
     deviceId: 'PI-GW-CSE-02',
-    name: 'Floor 2 Subnet Gateway Pi 5',
+    name: 'Raspberry Pi 4B (demo gateway)',
     type: 'PI_GATEWAY',
     roomId: 'room-202',
     status: 'ONLINE',
-    ipAddress: '10.24.12.1',
+    ipAddress: '--',
     lastPing: '500ms ago',
     firmwareVersion: 'v4.1.2-gw',
-    source: 'PI',
+    source: 'SIMULATED',
     note: 'demo data',
   },
   {
     id: 'dev-5',
     deviceId: 'ESP32-MAG-LAB01',
-    name: 'Magnetic Egress Reed Switch',
-    type: 'ESP32_PIR',
+    name: 'Door Contact Reed Switch (Not installed)',
+    type: 'DOOR_CONTACT',
     roomId: 'room-lab-ai-01',
-    status: 'DEGRADED',
-    ipAddress: '10.24.15.11',
-    lastPing: '10s ago',
+    status: 'NOT_INSTALLED',
+    ipAddress: '--',
+    lastPing: 'Not installed',
     firmwareVersion: 'v1.0.8',
-    source: 'ESP32',
+    source: 'SIMULATED',
+    note: 'demo data',
+  },
+  {
+    id: 'dev-6',
+    deviceId: 'IAQ-204',
+    name: 'Air Quality IAQ Sensor (Not installed)',
+    type: 'AIR_QUALITY',
+    roomId: 'room-204',
+    status: 'NOT_INSTALLED',
+    ipAddress: '--',
+    lastPing: 'Not installed',
+    firmwareVersion: 'v1.0.0-sim',
+    source: 'SIMULATED',
     note: 'demo data',
   },
 ];
@@ -765,7 +778,7 @@ let emergenciesStore: EmergencyRequest[] = [
     status: 'DISPATCHED',
     timestamp: '10:14:15',
     notes: 'Secondary exit alarm sounding; security duty desk notified via automated dispatch.',
-    source: 'LIVE',
+    source: 'SIMULATED',
     note: 'demo data',
   },
 ];
@@ -774,7 +787,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-101',
     type: 'OCCUPANCY_DISCREPANCY',
-    source: 'LIVE',
+    source: 'SIMULATED',
     roomId: 'room-204',
     priority: 'ORANGE',
     confidence: 0.96,
@@ -788,7 +801,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-102',
     type: 'PERIMETER_ALERT',
-    source: 'PI',
+    source: 'SIMULATED',
     roomId: 'room-lab-ai-01',
     priority: 'RED',
     confidence: 0.99,
@@ -801,7 +814,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-103',
     type: 'ENERGY_ANOMALY',
-    source: 'PI',
+    source: 'SIMULATED',
     roomId: 'room-102',
     priority: 'YELLOW',
     confidence: 0.88,
@@ -827,11 +840,11 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-105',
     type: 'TELEMETRY_SYNC',
-    source: 'PI',
+    source: 'SIMULATED',
     roomId: 'room-202',
     priority: 'GREEN',
     confidence: 0.99,
-    explanation: 'Floor 2 Subnet Gateway Pi 5 published 42 sensor packets with 0 dropped frames.',
+    explanation: 'Raspberry Pi 4B (demo gateway) published 42 sensor packets with 0 dropped frames.',
     recommendedAction: 'Nominal telemetry ingest rate verified.',
     status: 'RESOLVED',
     timestamp: '09:30:12',
@@ -840,7 +853,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-106',
     type: 'OCCUPANCY_CONFIRMED',
-    source: 'LIVE',
+    source: 'SIMULATED',
     roomId: 'room-201',
     priority: 'GREEN',
     confidence: 0.97,
@@ -853,7 +866,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-107',
     type: 'SETBACK_STANDBY',
-    source: 'PI',
+    source: 'SIMULATED',
     roomId: 'room-101',
     priority: 'GREEN',
     confidence: 0.99,
@@ -866,7 +879,7 @@ let eventsStore: CampusEvent[] = [
   {
     id: 'evt-108',
     type: 'TIMETABLE_INGEST',
-    source: 'LIVE',
+    source: 'SIMULATED',
     roomId: 'room-204',
     priority: 'GREEN',
     confidence: 1.0,
@@ -879,12 +892,12 @@ let eventsStore: CampusEvent[] = [
 ];
 
 const HOURLY_ENERGY_TODAY: import('../types').EnergyHourlyPoint[] = [
-  { time: '06:00', actualKw: 4.2, baselineKw: 8.5, unoccupiedWasteKw: 0.4, source: 'LIVE' },
-  { time: '07:00', actualKw: 6.8, baselineKw: 12.0, unoccupiedWasteKw: 0.8, source: 'LIVE' },
-  { time: '08:00', actualKw: 14.5, baselineKw: 22.0, unoccupiedWasteKw: 1.2, source: 'LIVE' },
-  { time: '09:00', actualKw: 19.8, baselineKw: 26.5, unoccupiedWasteKw: 2.4, source: 'LIVE' },
-  { time: '10:00', actualKw: 17.8, baselineKw: 28.5, unoccupiedWasteKw: 5.2, source: 'LIVE' },
-  { time: '11:00', actualKw: 15.2, baselineKw: 27.0, unoccupiedWasteKw: 4.1, source: 'LIVE' },
+  { time: '06:00', actualKw: 4.2, baselineKw: 8.5, unoccupiedWasteKw: 0.4, source: 'SIMULATED' },
+  { time: '07:00', actualKw: 6.8, baselineKw: 12.0, unoccupiedWasteKw: 0.8, source: 'SIMULATED' },
+  { time: '08:00', actualKw: 14.5, baselineKw: 22.0, unoccupiedWasteKw: 1.2, source: 'SIMULATED' },
+  { time: '09:00', actualKw: 19.8, baselineKw: 26.5, unoccupiedWasteKw: 2.4, source: 'SIMULATED' },
+  { time: '10:00', actualKw: 17.8, baselineKw: 28.5, unoccupiedWasteKw: 5.2, source: 'SIMULATED' },
+  { time: '11:00', actualKw: 15.2, baselineKw: 27.0, unoccupiedWasteKw: 4.1, source: 'SIMULATED' },
   { time: '12:00', actualKw: 11.4, baselineKw: 20.0, unoccupiedWasteKw: 2.8, source: 'SIMULATED' },
   { time: '13:00', actualKw: 13.6, baselineKw: 22.5, unoccupiedWasteKw: 3.0, source: 'SIMULATED' },
   { time: '14:00', actualKw: 18.2, baselineKw: 27.0, unoccupiedWasteKw: 3.5, source: 'SIMULATED' },
@@ -894,9 +907,9 @@ const HOURLY_ENERGY_TODAY: import('../types').EnergyHourlyPoint[] = [
 ];
 
 const HOURLY_ENERGY_WEEK: import('../types').EnergyHourlyPoint[] = [
-  { time: 'Mon', actualKw: 16.4, baselineKw: 26.0, unoccupiedWasteKw: 4.2, source: 'LIVE' },
-  { time: 'Tue', actualKw: 18.1, baselineKw: 27.5, unoccupiedWasteKw: 4.8, source: 'LIVE' },
-  { time: 'Wed', actualKw: 17.8, baselineKw: 28.5, unoccupiedWasteKw: 5.2, source: 'LIVE' },
+  { time: 'Mon', actualKw: 16.4, baselineKw: 26.0, unoccupiedWasteKw: 4.2, source: 'SIMULATED' },
+  { time: 'Tue', actualKw: 18.1, baselineKw: 27.5, unoccupiedWasteKw: 4.8, source: 'SIMULATED' },
+  { time: 'Wed', actualKw: 17.8, baselineKw: 28.5, unoccupiedWasteKw: 5.2, source: 'SIMULATED' },
   { time: 'Thu', actualKw: 15.9, baselineKw: 25.0, unoccupiedWasteKw: 3.9, source: 'SIMULATED' },
   { time: 'Fri', actualKw: 14.2, baselineKw: 24.0, unoccupiedWasteKw: 3.1, source: 'SIMULATED' },
   { time: 'Sat', actualKw: 6.8, baselineKw: 12.0, unoccupiedWasteKw: 0.9, source: 'SIMULATED' },
@@ -921,7 +934,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 2.2,
     hvacStatus: 'ON',
     currentClass: 'Data Structures (CS-201)',
-    source: 'LIVE',
+    source: 'SIMULATED',
   },
   {
     id: 'room-202',
@@ -940,7 +953,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 2.1,
     hvacStatus: 'ON',
     currentClass: 'Networks (CS-302)',
-    source: 'LIVE',
+    source: 'SIMULATED',
   },
   {
     id: 'room-203',
@@ -959,7 +972,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 0.2,
     hvacStatus: 'SETBACK',
     currentClass: 'Unscheduled',
-    source: 'PI',
+    source: 'SIMULATED',
   },
   {
     id: 'room-204',
@@ -978,7 +991,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 3.4,
     hvacStatus: 'ON',
     currentClass: 'Artificial Intelligence (AI-401)',
-    source: 'LIVE',
+    source: 'SIMULATED',
   },
   {
     id: 'room-205',
@@ -997,7 +1010,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 1.8,
     hvacStatus: 'ON',
     currentClass: 'Open Project Access',
-    source: 'PI',
+    source: 'SIMULATED',
   },
   {
     id: 'room-206',
@@ -1016,7 +1029,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 2.8,
     hvacStatus: 'ON',
     currentClass: 'Infrastructure Operations',
-    source: 'PI',
+    source: 'SIMULATED',
   },
   {
     id: 'room-fac-2b',
@@ -1054,7 +1067,7 @@ const CSE_FLOOR_2_NODES: import('../types').FloorRoomNode[] = [
     energyKw: 0.1,
     hvacStatus: 'OFF',
     currentClass: 'Fire Exit Route',
-    source: 'LIVE',
+    source: 'SIMULATED',
   },
 ];
 
@@ -1136,7 +1149,7 @@ export const mockClient: ApiClient = {
     const sensors: SensorReading[] = [
       {
         deviceId: `PIR-${room.number}`,
-        source: 'ESP32',
+        source: 'SIMULATED',
         roomId: room.id,
         type: 'PIR_MOTION',
         value: room.motionDetected,
@@ -1146,7 +1159,7 @@ export const mockClient: ApiClient = {
       },
       {
         deviceId: `CAM-${room.number}`,
-        source: 'PI',
+        source: 'SIMULATED',
         roomId: room.id,
         type: 'CAMERA_HEADCOUNT',
         value: room.observedHeadcount,
@@ -1155,18 +1168,8 @@ export const mockClient: ApiClient = {
         note: 'demo data',
       },
       {
-        deviceId: `PWR-${room.number}`,
-        source: 'PI',
-        roomId: room.id,
-        type: 'POWER_CURRENT',
-        value: room.energyKw,
-        unit: 'kW',
-        timestamp: '1s ago',
-        note: 'demo data',
-      },
-      {
         deviceId: `TEMP-${room.number}`,
-        source: 'ESP32',
+        source: 'SIMULATED',
         roomId: room.id,
         type: 'TEMPERATURE',
         value: 23.4,
@@ -1175,13 +1178,33 @@ export const mockClient: ApiClient = {
         note: 'demo data',
       },
       {
+        deviceId: `CT-CLAMP-${room.number}`,
+        source: 'SIMULATED',
+        roomId: room.id,
+        type: 'POWER_CURRENT',
+        value: 'Not installed',
+        unit: 'kW (Simulated)',
+        timestamp: 'Not installed',
+        note: 'demo data',
+      },
+      {
         deviceId: `DOOR-${room.number}`,
-        source: 'ESP32',
+        source: 'SIMULATED',
         roomId: room.id,
         type: 'DOOR_CONTACT',
-        value: room.status === 'critical' ? 'OPEN' : 'CLOSED',
-        unit: 'status',
-        timestamp: '5s ago',
+        value: 'Not installed',
+        unit: 'status (Simulated)',
+        timestamp: 'Not installed',
+        note: 'demo data',
+      },
+      {
+        deviceId: `IAQ-${room.number}`,
+        source: 'SIMULATED',
+        roomId: room.id,
+        type: 'AIR_QUALITY',
+        value: 'Not installed',
+        unit: 'ppm (Simulated)',
+        timestamp: 'Not installed',
         note: 'demo data',
       },
     ];
@@ -1359,7 +1382,7 @@ export const mockClient: ApiClient = {
       status: 'DISPATCHED',
       timestamp: new Date().toTimeString().split(' ')[0],
       notes: request.notes,
-      source: 'LIVE',
+      source: 'SIMULATED',
       note: 'demo data',
     };
 
@@ -1378,7 +1401,7 @@ export const mockClient: ApiClient = {
       gracePeriodMinutes: 0,
       priority: 'RED',
       status: 'ACTIVE',
-      source: 'LIVE',
+      source: 'SIMULATED',
       timestamp: newEmergency.timestamp,
       energyImpactKw: 0,
       note: 'demo data',
@@ -1398,7 +1421,7 @@ export const mockClient: ApiClient = {
       co2KgSaved: 48.7,
       sdgTargetAchievedPercent: 88.4,
       unoccupiedWasteKw: 5.2,
-      source: 'LIVE',
+      source: 'SIMULATED',
       note: 'demo data',
     };
     return latency(summary);
@@ -1431,7 +1454,7 @@ export const mockClient: ApiClient = {
         tool: 'getClassroomAlerts()',
         resultSummary: '2 discrepancies active',
         recordsCount: 2,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'ALT-204',
@@ -1457,7 +1480,7 @@ export const mockClient: ApiClient = {
         tool: "getRoomsByPriority(['ORANGE', 'RED'])",
         resultSummary: '2 rooms matched',
         recordsCount: 2,
-        source: 'PI',
+        source: 'SIMULATED',
         records: [
           {
             id: 'room-204',
@@ -1484,7 +1507,7 @@ export const mockClient: ApiClient = {
           title: 'Lecture Hall 204',
           subtitle: 'CSE Block, 2nd Floor',
           category: 'Room',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Review Required',
           badge: 'ORANGE',
           details: 'Expected: 60 occupants (AI-401). Observed: 0 occupants. Active power: 3.4 kW.',
@@ -1496,7 +1519,7 @@ export const mockClient: ApiClient = {
           title: 'AI & Robotics Hub 01',
           subtitle: 'CSE Block, Ground Floor',
           category: 'Room',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'Critical Alert',
           badge: 'RED',
           details: 'Door contact interrupted at 10:14:15. Motion detected near server rack.',
@@ -1508,7 +1531,7 @@ export const mockClient: ApiClient = {
           title: 'ALT-204: Commencement Discrepancy',
           subtitle: 'Commencement Grace Engine',
           category: 'Alert',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'New',
           badge: 'ORANGE',
           details: '10-minute grace window elapsed without confirmed student headcount.',
@@ -1537,7 +1560,7 @@ export const mockClient: ApiClient = {
         tool: "getTimetable(slot='10:00-11:00')",
         resultSummary: '2 slots scheduled',
         recordsCount: 2,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'tt-204-1',
@@ -1563,7 +1586,7 @@ export const mockClient: ApiClient = {
         tool: "getLiveOccupancy(['room-204', 'room-lab-ai-02'])",
         resultSummary: '2 inference feeds',
         recordsCount: 2,
-        source: 'PI',
+        source: 'SIMULATED',
         records: [
           {
             id: 'occ-204',
@@ -1588,7 +1611,7 @@ export const mockClient: ApiClient = {
           title: 'Artificial Intelligence (AI-401)',
           subtitle: 'Lecture Hall 204 · Section CSE-A',
           category: 'Timetable',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'Unconfirmed (0/60)',
           badge: 'ORANGE',
           details: 'Scheduled 10:00 - 11:00. Faculty: Dr. Suresh Varma. Expected: 60 students.',
@@ -1600,7 +1623,7 @@ export const mockClient: ApiClient = {
           title: 'Edge ML Practicum (AI-490)',
           subtitle: 'Computer Vision Testbed 02 (LAB-AI-02)',
           category: 'Timetable',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Confirmed (26/28)',
           badge: 'GREEN',
           details: 'Scheduled 09:30 - 11:30. Faculty: Dr. Malini Rao. Expected: 28 students.',
@@ -1630,12 +1653,12 @@ export const mockClient: ApiClient = {
         tool: "getEdgeDevices(status='OFFLINE' | 'DEGRADED')",
         resultSummary: '1 degraded node',
         recordsCount: 1,
-        source: 'PI',
+        source: 'SIMULATED',
         records: [
           {
             id: 'PI-CAM-204',
             title: 'PI-CAM-204: Ceiling Camera Node',
-            subtitle: 'PoE Switch Port 14 · Last ping intermittent',
+            subtitle: 'Last ping intermittent',
             category: 'Device',
             badge: 'DEGRADED',
             link: '/rooms/room-204',
@@ -1648,12 +1671,12 @@ export const mockClient: ApiClient = {
         tool: 'getGatewayHeartbeats()',
         resultSummary: '3 gateways online (<500ms)',
         recordsCount: 3,
-        source: 'PI',
+        source: 'SIMULATED',
         records: [
           {
             id: 'PI-GW-CSE-02',
-            title: 'PI-GW-CSE-02: Floor 2 Subnet Gateway Pi 5',
-            subtitle: 'IP: 10.24.12.1 · Latency: 500ms',
+            title: 'PI-GW-CSE-02: Raspberry Pi 4B (demo gateway)',
+            subtitle: 'IP: -- · Latency: 500ms',
             category: 'Device',
             badge: 'ONLINE',
           },
@@ -1666,23 +1689,23 @@ export const mockClient: ApiClient = {
           title: 'PI-CAM-204 (Ceiling Camera Headcount)',
           subtitle: 'Lecture Hall 204, CSE Level 2',
           category: 'Device',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Degraded / Heartbeat Check',
           badge: 'YELLOW',
-          details: 'IP: 10.24.12.204 · Firmware: v2.4.1-edge · Video stream inference 12 FPS.',
+          details: 'IP: -- · Firmware: v2.4.1-edge · Video stream inference 12 FPS.',
           link: '/rooms/room-204',
-          metrics: { 'IP Address': '10.24.12.204', Status: 'Degraded', Port: 'PoE 14' },
+          metrics: { 'IP Address': '--', Status: 'Degraded' },
         },
         {
           id: 'dev-gw-02',
-          title: 'PI-GW-CSE-02 (Floor 2 Gateway Pi 5)',
+          title: 'PI-GW-CSE-02 (Raspberry Pi 4B (demo gateway))',
           subtitle: 'CSE Block Level 2 Sub-Station',
           category: 'Device',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Healthy',
           badge: 'GREEN',
-          details: 'IP: 10.24.12.1 · Firmware: v4.1.2-gw · Ping: 500ms · Ingestion: Nominal.',
-          metrics: { 'IP Address': '10.24.12.1', Ping: '500ms', Nodes: '18 active' },
+          details: 'IP: -- · Firmware: v4.1.2-gw · Ping: 500ms · Ingestion: Nominal.',
+          metrics: { 'IP Address': '--', Ping: '500ms', Nodes: '18 active' },
         }
       );
 
@@ -1707,7 +1730,7 @@ export const mockClient: ApiClient = {
         tool: 'getEnergyWasteFlags()',
         resultSummary: '2 rooms flagged (>1.0 kW unoccupied)',
         recordsCount: 2,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'room-204',
@@ -1733,14 +1756,14 @@ export const mockClient: ApiClient = {
         tool: 'getSubMeterPowerSummary()',
         resultSummary: '5.2 kW total unoccupied waste',
         recordsCount: 1,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'submeter-a4',
             title: 'Substation Meter A-4',
             subtitle: 'Current total facility power: 17.8 kW (Baseline: 12.6 kW)',
             category: 'Energy',
-            badge: 'LIVE',
+            badge: 'SIMULATED',
           },
         ],
       });
@@ -1751,7 +1774,7 @@ export const mockClient: ApiClient = {
           title: 'Lecture Hall 204 Circuit',
           subtitle: 'CSE Block 2nd Floor',
           category: 'Energy',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'Review Required',
           badge: 'ORANGE',
           details: 'Drawing 3.4 kW (Lights 0.45 kW, HVAC/Fan 2.95 kW) while occupancy reading is 0.',
@@ -1763,7 +1786,7 @@ export const mockClient: ApiClient = {
           title: 'Seminar Room 102 Circuit',
           subtitle: 'Main Block Level 1',
           category: 'Energy',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Advisory Alert',
           badge: 'YELLOW',
           details: 'Drawing 1.8 kW on branch lighting relay outside scheduled bookings.',
@@ -1793,7 +1816,7 @@ export const mockClient: ApiClient = {
         tool: "getRoomInfo('room-lab-ai-01')",
         resultSummary: '1 space located',
         recordsCount: 1,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'room-lab-ai-01',
@@ -1811,7 +1834,7 @@ export const mockClient: ApiClient = {
         tool: "getAdjacentRooms('room-lab-ai-01')",
         resultSummary: '1 adjacent lab',
         recordsCount: 1,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'room-lab-ai-02',
@@ -1829,7 +1852,7 @@ export const mockClient: ApiClient = {
           title: 'AI & Robotics Hub 01 (LAB-AI-01)',
           subtitle: 'CSE Block, Ground Floor',
           category: 'Room',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'Access Controlled',
           badge: 'RED',
           details: 'Capacity 40. Equipped with 8 edge robotics test benches and ceiling camera node.',
@@ -1841,7 +1864,7 @@ export const mockClient: ApiClient = {
           title: 'Computer Vision Testbed 02 (LAB-AI-02)',
           subtitle: 'CSE Block, Ground Floor',
           category: 'Room',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Active (26/28)',
           badge: 'GREEN',
           details: 'Capacity 30. Adjacent to Hub 01. Currently hosting Edge ML Practicum.',
@@ -1871,7 +1894,7 @@ export const mockClient: ApiClient = {
         tool: "getAlerts(status='ACTIVE')",
         resultSummary: '4 active discrepancies',
         recordsCount: 4,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [
           {
             id: 'ALT-LAB-01',
@@ -1914,7 +1937,7 @@ export const mockClient: ApiClient = {
           title: 'ALT-LAB-01: Perimeter Hardware',
           subtitle: 'LAB-AI-01 · Security Patrol #04',
           category: 'Alert',
-          source: 'LIVE',
+          source: 'SIMULATED',
           status: 'Active / Critical',
           badge: 'RED',
           details: 'Egress contact interrupted without badge scan.',
@@ -1925,7 +1948,7 @@ export const mockClient: ApiClient = {
           title: 'ALT-204: Commencement Discrepancy',
           subtitle: 'Room 204 · Facilities Desk',
           category: 'Alert',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Active / Review',
           badge: 'ORANGE',
           details: 'Classroom activity not confirmed within grace period.',
@@ -1936,7 +1959,7 @@ export const mockClient: ApiClient = {
           title: 'ALT-102: Unscheduled Circuit Draw',
           subtitle: 'Room 102 · Main Block',
           category: 'Alert',
-          source: 'PI',
+          source: 'SIMULATED',
           status: 'Acknowledged',
           badge: 'YELLOW',
           details: '1.8 kW lighting load active outside bookings.',
@@ -1960,7 +1983,7 @@ export const mockClient: ApiClient = {
         tool: "getRoom('room-204')",
         resultSummary: '1 room record',
         recordsCount: 1,
-        source: 'PI',
+        source: 'SIMULATED',
         records: [
           {
             id: 'room-204',
@@ -1978,7 +2001,7 @@ export const mockClient: ApiClient = {
         title: 'Lecture Hall 204',
         subtitle: 'CSE Block, Level 2',
         category: 'Room',
-        source: 'PI',
+        source: 'SIMULATED',
         status: 'Review Required',
         badge: 'ORANGE',
         details: 'Classroom activity has not been confirmed within 10-minute grace window.',
@@ -2002,7 +2025,7 @@ export const mockClient: ApiClient = {
         tool: `queryCampusTelemetry("${query.slice(0, 30)}")`,
         resultSummary: '0 matching records found',
         recordsCount: 0,
-        source: 'LIVE',
+        source: 'SIMULATED',
         records: [],
       });
 
@@ -2022,7 +2045,7 @@ export const mockClient: ApiClient = {
       sourceRecords,
       suggestedActions,
       relevantRooms,
-      source: isDegraded ? 'SIMULATED' : 'LIVE',
+      source: 'SIMULATED',
       degradedMode: isDegraded,
       note: 'demo data',
     });
@@ -2081,7 +2104,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 10,
           priority: 'YELLOW',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:05:00',
           energyImpactKw: 1.6,
           triageStatus: 'New',
@@ -2139,7 +2162,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 0,
           priority: 'YELLOW',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '11:45:00',
           energyImpactKw: 2.1,
           triageStatus: 'New',
@@ -2175,7 +2198,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 5,
           priority: 'ORANGE',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:14:00',
           energyImpactKw: 4.4,
           triageStatus: 'New',
@@ -2207,7 +2230,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 3,
           priority: 'YELLOW',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:12:00',
           energyImpactKw: 0,
           triageStatus: 'New',
@@ -2239,7 +2262,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 1,
           priority: 'YELLOW',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:08:00',
           energyImpactKw: 0,
           triageStatus: 'New',
@@ -2278,7 +2301,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 15,
           priority: 'ORANGE',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:16:00',
           energyImpactKw: 3.9,
           triageStatus: 'New',
@@ -2311,7 +2334,7 @@ export const mockClient: ApiClient = {
           gracePeriodMinutes: 0,
           priority: 'RED',
           status: 'ACTIVE',
-          source: 'LIVE',
+          source: 'SIMULATED',
           timestamp: '10:18:00',
           energyImpactKw: 0,
           triageStatus: 'New',
@@ -2382,7 +2405,7 @@ export const mockClient: ApiClient = {
         value: '17.8',
         unit: 'kW',
         delta: { value: '-4.2 kW', trend: 'down', isPositive: true },
-        source: 'LIVE',
+        source: 'SIMULATED',
         subtext: 'Campus Sub-Station Meter A-4',
       },
       {
@@ -2391,7 +2414,7 @@ export const mockClient: ApiClient = {
         value: '128/132',
         unit: 'nodes',
         delta: { value: '97.0%', trend: 'neutral', isPositive: true },
-        source: 'PI',
+        source: 'SIMULATED',
         subtext: 'Edge Raspberry Pi Clusters',
       },
       {
@@ -2400,7 +2423,7 @@ export const mockClient: ApiClient = {
         value: '5.20',
         unit: 'kW',
         delta: { value: '+1.8 kW', trend: 'up', isPositive: false },
-        source: 'LIVE',
+        source: 'SIMULATED',
         subtext: 'Room 204 & 102 circuit draw',
       },
       {
@@ -2449,7 +2472,7 @@ export const mockClient: ApiClient = {
         edgeSensorsOnline: 396,
         ingestRateSec: 48,
         lastHeartbeat: '2026-10-07 10:18:22',
-        source: 'PI' as DataSourceType,
+        source: 'SIMULATED' as DataSourceType,
       },
     });
   },
@@ -2470,7 +2493,7 @@ export const mockClient: ApiClient = {
     const room = roomsStore.find((r) => r.id === event.roomId);
     if (room) {
       room.observedHeadcount = event.observedHeadcount;
-      room.source = 'PI';
+      room.source = 'SIMULATED';
       room.motionDetected = event.observedHeadcount > 0;
     }
     return latency({
@@ -2507,6 +2530,17 @@ export const mockClient: ApiClient = {
     });
   },
 };
+
+// Real hardware PI reading listener for live telemetry ingestion
+let piReadingListener: (() => void) | null = null;
+
+export function setPiReadingListener(listener: (() => void) | null) {
+  piReadingListener = listener;
+}
+
+export function recordPiReading(): void {
+  piReadingListener?.();
+}
 
 /**
  * HttpClient implementation of ApiClient.
@@ -2683,24 +2717,27 @@ export class HttpClient implements ApiClient {
   }
 
   async postVisionEvent(event: VisionEventRequest): Promise<VisionEventResponse> {
-    return this.request<VisionEventResponse>('/vision/events', {
+    const res = await this.request<VisionEventResponse>('/vision/events', {
       method: 'POST',
       body: JSON.stringify(event),
     });
+    return res;
   }
 
   async postEdgeSensor(reading: EdgeSensorTelemetryRequest): Promise<EdgeSensorTelemetryResponse> {
-    return this.request<EdgeSensorTelemetryResponse>('/edge/sensors', {
+    const res = await this.request<EdgeSensorTelemetryResponse>('/edge/sensors', {
       method: 'POST',
       body: JSON.stringify(reading),
     });
+    return res;
   }
 
   async postEdgeHeartbeat(heartbeat: EdgeHeartbeatRequest): Promise<EdgeHeartbeatResponse> {
-    return this.request<EdgeHeartbeatResponse>('/edge/heartbeat', {
+    const res = await this.request<EdgeHeartbeatResponse>('/edge/heartbeat', {
       method: 'POST',
       body: JSON.stringify(heartbeat),
     });
+    return res;
   }
 }
 

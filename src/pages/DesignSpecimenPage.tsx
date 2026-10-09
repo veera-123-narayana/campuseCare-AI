@@ -51,9 +51,14 @@ export const DesignSpecimenPage: React.FC = () => {
   const [alertFeedback, setAlertFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    api.getSpecimenData().then((res) => {
-      setData(res);
-    });
+    api
+      .getSpecimenData()
+      .then((res) => {
+        setData(res);
+      })
+      .catch((err) => {
+        console.warn('Specimen data unavailable or not implemented (501):', err);
+      });
   }, []);
 
   const handleAcknowledgeAlert = async (id: string) => {

@@ -3,6 +3,7 @@ import { Activity, Clock, ArrowRight } from 'lucide-react';
 import { CampusEvent, PriorityLevel } from '../../types';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
+import { formatTime } from '../../utils/formatTime';
 
 interface LiveActivityFeedProps {
   events: CampusEvent[];
@@ -68,11 +69,11 @@ export const LiveActivityFeed: React.FC<LiveActivityFeedProps> = ({
                       </span>
                       <div className="flex items-center gap-1.5">
                         <SourceBadge
-                          source={evt.source === 'ESP32' ? 'PI' : (evt.source as any)}
+                          source={evt.source as any}
                           size="sm"
                         />
                         <span className="font-mono text-[11px] text-muted tabular-nums">
-                          {evt.timestamp}
+                          {formatTime(evt.timestamp)}
                         </span>
                       </div>
                     </div>

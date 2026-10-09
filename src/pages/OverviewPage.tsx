@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCampus } from '../context/CampusContext';
 import { api } from '../services/api';
-import { EnergyHourlyPoint, FloorRoomNode } from '../types';
+import { DataSourceType, EnergyHourlyPoint, FloorRoomNode } from '../types';
 
 import { MetricTile } from '../components/ui/MetricTile';
 import { SourceBadge } from '../components/ui/SourceBadge';
@@ -23,9 +23,9 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
   const {
     rooms,
     alerts,
+    devices,
     events,
     loading: contextLoading,
-    dataMode,
     acknowledgeAlert,
   } = useCampus();
 
@@ -122,12 +122,33 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
     );
   }
 
-  // Calculate high-level summary metrics
-  const roomsNeedingReviewCount = rooms.filter((r) => r.priority === 'ORANGE').length;
-  const activeAlertsCount = alerts.filter((a) => a.status === 'ACTIVE').length;
+  // Calculate high-level summary metrics & individual tile data sources
+  const roomsNeedingReview = rooms.filter((r) => r.priority === 'ORANGE');
+  const roomsNeedingReviewCount = roomsNeedingReview.length;
+  // Occupancy and motion tile: may show PI only when underlying readings have source 'PI'
+  const roomsNeedingReviewSource: DataSourceType = roomsNeedingReview.some((r) => r.source === 'PI')
+    ? 'PI'
+    : 'SIMULATED';
+
+  const activeAlerts = alerts.filter((a) => a.status === 'ACTIVE');
+  const activeAlertsCount = activeAlerts.length;
+  const activeAlertsSource: DataSourceType = activeAlerts.some((a) => a.source === 'PI')
+    ? 'PI'
+    : 'SIMULATED';
+
   const energyWasteFlagsCount = rooms.filter(
     (r) => r.expectedOccupancy === 0 && r.energyKw > 1.0
   ).length;
+  // Energy, temperature and anything derived from mock records stay SIMULATED even when PI is connected
+  const energyWasteFlagsSource: DataSourceType = 'SIMULATED';
+
+  // Devices online: stay SIMULATED unless real PI device records with source 'PI' are present
+  const devicesOnlineSource: DataSourceType = devices.some((d) => d.source === 'PI')
+    ? 'PI'
+    : 'SIMULATED';
+
+  // Overview / timeframe control badge: reflects underlying room readings (PI only if real PI readings present)
+  const overviewSource: DataSourceType = rooms.some((r) => r.source === 'PI') ? 'PI' : 'SIMULATED';
 
   return (
     <div className="space-y-8">
@@ -155,7 +176,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
           />
 
           <SourceBadge
-            source={dataMode === 'PI CONNECTED' ? 'PI' : 'SIMULATED'}
+            source={overviewSource}
             size="md"
           />
         </div>
@@ -170,7 +191,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             dominant={true}
             value={<NumberCountUp target={roomsNeedingReviewCount} durationMs={200} />}
             delta={{ value: '+1 vs yesterday', trend: 'up', isPositive: false }}
-            source="LIVE"
+            source={roomsNeedingReviewSource}
             subtext="LH-204 grace window expired"
             onClick={() => onNavigate('/rooms/room-204')}
           />
@@ -182,7 +203,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             label="Active alerts"
             value={<NumberCountUp target={activeAlertsCount} durationMs={220} />}
             delta={{ value: '-2 vs yesterday', trend: 'down', isPositive: true }}
-            source="LIVE"
+            source={activeAlertsSource}
             subtext="1 critical · 1 review · 1 attention"
             onClick={() => onNavigate('/alerts')}
           />
@@ -194,7 +215,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             label="Energy-waste flags"
             value={<NumberCountUp target={energyWasteFlagsCount} durationMs={240} />}
             delta={{ value: '+1 vs yesterday', trend: 'up', isPositive: false }}
-            source="PI"
+            source={energyWasteFlagsSource}
             subtext="5.2 kW unconfirmed draw"
             onClick={() => onNavigate('/sustainability')}
           />
@@ -211,7 +232,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
               </span>
             }
             delta={{ value: '97.0% connected', trend: 'neutral', isPositive: true }}
-            source="PI"
+            source={devicesOnlineSource}
             subtext="Edge Pi cameras & PIR nodes"
           />
         </div>

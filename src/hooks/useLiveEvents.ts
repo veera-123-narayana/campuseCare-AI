@@ -93,7 +93,7 @@ export function useLiveEvents(options: UseLiveEventsOptions = {}): UseLiveEvents
         type: 'sensor.reading',
         reading: {
           deviceId: 'PWR-204',
-          source: 'PI',
+          source: 'SIMULATED',
           roomId: 'room-204',
           type: 'POWER_CURRENT',
           value: 3.4,

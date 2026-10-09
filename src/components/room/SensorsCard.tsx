@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Sun, Thermometer, Droplets } from 'lucide-react';
+import { Activity, Sun, Thermometer, Droplets, Zap, DoorClosed, Wind } from 'lucide-react';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
 
@@ -59,34 +59,68 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
       value: motionActive ? 'Active (4 trg/m)' : 'Idle (0 triggers)',
       valueColor: motionActive ? 'text-status-green' : 'text-muted',
       sparkPoints: motionActive ? [0, 2, 4, 3, 5, 4] : [0, 0, 0, 0, 0, 0],
-      source: 'ESP32' as const,
+      source: 'SIMULATED' as const,
+      installed: true,
     },
     {
       id: 'lux',
       name: 'Ambient Light Level',
       icon: <Sun className="w-4 h-4 text-muted" />,
-      value: `${lightLux} Lux`,
-      valueColor: lightLux > 300 ? 'text-ink' : 'text-muted',
-      sparkPoints: [480, 510, 530, 540, 540, lightLux],
-      source: 'PI' as const,
+      value: lightLux != null ? `${lightLux} Lux` : '--',
+      valueColor: lightLux != null && lightLux > 300 ? 'text-ink' : 'text-muted',
+      sparkPoints: [480, 510, 530, 540, 540, lightLux ?? 0],
+      source: 'SIMULATED' as const,
+      installed: true,
     },
     {
       id: 'temp',
       name: 'Temperature',
       icon: <Thermometer className="w-4 h-4 text-muted" />,
-      value: `${temperature.toFixed(1)} °C`,
+      value: temperature != null ? `${temperature.toFixed(1)} °C` : '--',
       valueColor: 'text-ink',
-      sparkPoints: [27.8, 28.0, 28.2, 28.3, 28.4, temperature],
-      source: 'ESP32' as const,
+      sparkPoints: [27.8, 28.0, 28.2, 28.3, 28.4, temperature ?? 0],
+      source: 'SIMULATED' as const,
+      installed: true,
     },
     {
       id: 'hum',
       name: 'Relative Humidity',
       icon: <Droplets className="w-4 h-4 text-muted" />,
-      value: `${humidity.toFixed(1)} %RH`,
+      value: humidity != null ? `${humidity.toFixed(1)} %RH` : '--',
       valueColor: 'text-ink',
-      sparkPoints: [49.0, 48.8, 48.5, 48.4, 48.2, humidity],
-      source: 'ESP32' as const,
+      sparkPoints: [49.0, 48.8, 48.5, 48.4, 48.2, humidity ?? 0],
+      source: 'SIMULATED' as const,
+      installed: true,
+    },
+    {
+      id: 'ct-clamp',
+      name: 'CT Power Clamp (Branch Sub-Meter)',
+      icon: <Zap className="w-4 h-4 text-muted" />,
+      value: '--',
+      valueColor: 'text-muted font-mono',
+      sparkPoints: [0, 0, 0, 0, 0, 0],
+      source: 'SIMULATED' as const,
+      installed: false,
+    },
+    {
+      id: 'door',
+      name: 'Door Contact (Magnetic Reed Switch)',
+      icon: <DoorClosed className="w-4 h-4 text-muted" />,
+      value: '--',
+      valueColor: 'text-muted font-mono',
+      sparkPoints: [0, 0, 0, 0, 0, 0],
+      source: 'SIMULATED' as const,
+      installed: false,
+    },
+    {
+      id: 'iaq',
+      name: 'Air Quality (CO₂ / PM2.5 IAQ)',
+      icon: <Wind className="w-4 h-4 text-muted" />,
+      value: '--',
+      valueColor: 'text-muted font-mono',
+      sparkPoints: [0, 0, 0, 0, 0, 0],
+      source: 'SIMULATED' as const,
+      installed: false,
     },
   ];
 
@@ -95,10 +129,13 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-[18px]">Environmental Sensors</CardTitle>
-          <span className="font-mono text-[11px] text-muted">ESP32 + Pi I2C</span>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[11px] text-muted">Telemetry bus</span>
+            <SourceBadge source="SIMULATED" size="sm" />
+          </div>
         </div>
         <CardDescription>
-          Hardware bus telemetry streaming at 1Hz from Room 204 perimeter nodes.
+          Hardware bus telemetry and uninstalled hardware simulated indicators.
         </CardDescription>
       </CardHeader>
 
@@ -106,14 +143,23 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
         {sensorList.map((s) => (
           <div
             key={s.id}
-            className="p-3 rounded-[8px] bg-surface-2 border border-hairline flex items-center justify-between gap-3 text-[13px]"
+            className={`p-3 rounded-[8px] bg-surface-2 border border-hairline flex items-center justify-between gap-3 text-[13px] ${
+              !s.installed ? 'border-dashed opacity-85' : ''
+            }`}
           >
             <div className="flex items-center gap-2.5 min-w-0">
               {s.icon}
               <div className="min-w-0">
-                <span className="font-medium text-ink block leading-none truncate">
-                  {s.name}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-ink block leading-none truncate">
+                    {s.name}
+                  </span>
+                  {!s.installed && (
+                    <span className="px-1.5 py-0.2 rounded text-[9.5px] font-mono font-semibold uppercase bg-surface border border-hairline text-muted shrink-0">
+                      Not installed
+                    </span>
+                  )}
+                </div>
                 <span className={`font-mono text-[12px] font-semibold mt-1 block ${s.valueColor}`}>
                   {s.value}
                 </span>
@@ -121,8 +167,12 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <Sparkline points={s.sparkPoints} />
-              <SourceBadge source={s.source === 'ESP32' ? 'PI' : s.source} size="sm" />
+              {s.installed ? (
+                <Sparkline points={s.sparkPoints} color="var(--accent)" />
+              ) : (
+                <span className="text-[11px] font-mono text-muted w-12 text-center">--</span>
+              )}
+              <SourceBadge source={s.source} size="sm" />
             </div>
           </div>
         ))}

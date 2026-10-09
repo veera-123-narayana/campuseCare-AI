@@ -34,12 +34,12 @@ export const CameraFeedCard: React.FC<CameraFeedCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Camera className="w-4 h-4 text-muted" />
-            <CardTitle className="text-[18px]">Vision Telemetry Node</CardTitle>
+            <CardTitle className="text-[18px]">Camera node (simulated)</CardTitle>
           </div>
           <SourceBadge source="SIMULATED" size="sm" />
         </div>
         <CardDescription>
-          Edge inference video pipeline running on ceiling-mounted Raspberry Pi 5.
+          Edge inference video pipeline for occupancy detection.
         </CardDescription>
       </CardHeader>
 
@@ -150,7 +150,7 @@ export const CameraFeedCard: React.FC<CameraFeedCardProps> = ({
           {/* Top Overlays */}
           <div className="absolute top-2 left-2 right-2 flex items-center justify-between text-[10px] font-mono text-white/90">
             <span className="bg-black/70 px-2 py-0.5 rounded border border-white/10">
-              CAM-204 · CEILING VISION
+              CAM-204 · CAMERA NODE (SIMULATED)
             </span>
             <span className="bg-black/70 text-[#2DD4BF] px-2 py-0.5 rounded border border-dashed border-[#2DD4BF]/40">
               SIMULATED camera node

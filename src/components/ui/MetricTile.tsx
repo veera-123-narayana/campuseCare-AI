@@ -52,9 +52,9 @@ export const MetricTile: React.FC<MetricTileProps> = ({
       {/* Main Metric: 44px Hero Mono Value + Unit */}
       <div className="flex items-baseline gap-2 mb-2">
         <span className="text-[44px] font-mono font-medium tracking-tight text-ink tabular-nums leading-none">
-          {value}
+          {value === null || value === undefined || value === '' ? '--' : value}
         </span>
-        {unit && (
+        {unit && value !== null && value !== undefined && value !== '' && value !== '--' && (
           <span className="text-[14px] font-mono text-muted tracking-normal">
             {unit}
           </span>

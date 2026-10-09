@@ -9,7 +9,7 @@ import {
   UserProfile,
   UserRole,
 } from '../types';
-import { api, isRealBackendMode } from '../services/api';
+import { api, isRealBackendMode, setPiReadingListener } from '../services/api';
 import { useLiveEvents, ConnectionStatus } from '../hooks/useLiveEvents';
 
 export type DataMode = 'SIMULATION' | 'PI CONNECTED';
@@ -25,6 +25,8 @@ interface CampusContextType {
   dataMode: DataMode;
   setDataMode: (mode: DataMode) => void;
   toggleDataMode: () => void;
+  recordPiReading: () => void;
+  isDevMode: boolean;
   connectionStatus: ConnectionStatus;
   reconnectConnection: () => void;
   currentUser: UserProfile;
@@ -63,6 +65,7 @@ interface CampusContextType {
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
+  backendOffline: boolean;
 }
 
 const defaultUserProfiles: Record<UserRole, UserProfile> = {
@@ -88,6 +91,66 @@ const defaultUserProfiles: Record<UserRole, UserProfile> = {
 
 const CampusContext = createContext<CampusContextType | undefined>(undefined);
 
+// Helper to check whether a timestamp string or number is within the last 60 seconds
+function isWithinLast60Seconds(timestamp?: string | number | null): boolean {
+  if (!timestamp) return false;
+
+  if (typeof timestamp === 'number') {
+    const now = Date.now();
+    const timeMs = timestamp < 1e11 ? timestamp * 1000 : timestamp;
+    const diff = now - timeMs;
+    return diff >= -5000 && diff <= 60000;
+  }
+
+  const str = String(timestamp).trim();
+  const lower = str.toLowerCase();
+
+  if (lower === 'just now') return true;
+
+  const secMatch = lower.match(/^(\d+)\s*(?:s|sec|second|seconds)(?:\s*ago)?$/);
+  if (secMatch) {
+    const seconds = parseInt(secMatch[1], 10);
+    return seconds <= 60;
+  }
+
+  if (
+    lower.includes('min') ||
+    lower.includes('hour') ||
+    lower.includes('day') ||
+    lower.includes('week') ||
+    lower.includes('month') ||
+    lower.includes('year') ||
+    lower.includes('m ago') ||
+    lower.includes('h ago') ||
+    lower.includes('d ago')
+  ) {
+    return false;
+  }
+
+  const timeOnlyMatch = str.match(/^(\d{1,2}):(\d{2}):(\d{2})$/);
+  if (timeOnlyMatch) {
+    const now = new Date();
+    const target = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      parseInt(timeOnlyMatch[1], 10),
+      parseInt(timeOnlyMatch[2], 10),
+      parseInt(timeOnlyMatch[3], 10)
+    );
+    const diff = Math.abs(now.getTime() - target.getTime());
+    return diff <= 60000;
+  }
+
+  const parsed = Date.parse(str);
+  if (!isNaN(parsed)) {
+    const diff = Date.now() - parsed;
+    return diff >= -5000 && diff <= 60000;
+  }
+
+  return false;
+}
+
 export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -97,7 +160,11 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [dataMode, setDataMode] = useState<DataMode>('PI CONNECTED');
+  const [backendOffline, setBackendOffline] = useState<boolean>(false);
+  const [dataMode, setDataMode] = useState<DataMode>('SIMULATION');
+  const [lastPiReadingTime, setLastPiReadingTime] = useState<number | null>(null);
+  const [devModeOverride, setDevModeOverride] = useState<DataMode | null>(null);
+  const isDevMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === '1';
   const [currentUser, setCurrentUser] = useState<UserProfile>(defaultUserProfiles['Admin / HOD']);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState<boolean>(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -105,8 +172,45 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   const [isDeviceOfflineSimulated, setIsDeviceOfflineSimulated] = useState<boolean>(false);
 
+  // Set the Pi-connected timestamp when dashboard receives qualifying PI telemetry in HTTP mode
+  // In mock mode, this path must never run
+  const recordPiReading = useCallback(() => {
+    if (!isRealBackendMode) return;
+    setLastPiReadingTime(Date.now());
+  }, []);
+
+  useEffect(() => {
+    if (!isRealBackendMode) return;
+    setPiReadingListener(recordPiReading);
+    return () => {
+      setPiReadingListener(null);
+    };
+  }, [recordPiReading]);
+
   // Live WebSocket event integration with backoff and graceful offline preservation
   const handleLiveEvent = useCallback((event: import('../types/contract').LiveEventPayload) => {
+    // In HTTP mode only (VITE_DATA_MODE=http), detect incoming PI telemetry with recent timestamp
+    // Heartbeats alone must NOT count; only a sensor or vision reading counts
+    // In mock mode, this path must never run
+    if (isRealBackendMode) {
+      if (event.type === 'sensor.reading' && event.reading) {
+        if (event.reading.source === 'PI' && isWithinLast60Seconds(event.reading.timestamp)) {
+          recordPiReading();
+        }
+      } else if (event.type === 'vision.headcount') {
+        const evSource = (event as any).source || 'PI';
+        if (evSource === 'PI' && isWithinLast60Seconds(event.timestamp)) {
+          recordPiReading();
+        }
+      } else if (event.type === 'room.updated') {
+        const evSource = (event.updates as any)?.source;
+        if (evSource === 'PI') {
+          recordPiReading();
+        }
+      }
+      // Note: event.type === 'edge.heartbeat' is deliberately excluded (heartbeats alone do NOT count)
+    }
+
     if (event.type === 'alert.created') {
       setAlerts((prev) => [event.alert, ...prev.filter((a) => a.id !== event.alert.id)]);
     } else if (event.type === 'alert.updated') {
@@ -158,6 +262,7 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       setLoading(true);
       setError(null);
+      setBackendOffline(false);
       const [roomsRes, alertsRes, devicesRes, energyRes, eventsRes] = await Promise.all([
         api.getRooms(),
         api.getAlerts(),
@@ -170,13 +275,48 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setDevices(devicesRes);
       setEnergySummary(energyRes);
       setEvents(eventsRes);
+
+      // In HTTP mode only (VITE_DATA_MODE=http):
+      // Set the Pi-connected timestamp when dashboard receives data from backend:
+      // any event, sensor reading or device record with source === 'PI' and timestamp within last 60s.
+      // Heartbeats alone must NOT count; only a sensor or vision reading counts.
+      // In mock mode, this path must never run.
+      if (isRealBackendMode) {
+        const hasRecentPiEvent = eventsRes.some(
+          (e) => e.source === 'PI' && isWithinLast60Seconds(e.timestamp)
+        );
+        const hasRecentPiDevice = devicesRes.some(
+          (d) =>
+            d.source === 'PI' &&
+            d.type !== 'PI_GATEWAY' && // gateway heartbeats alone do not count
+            (d.type === 'PI_CAMERA' || d.type.includes('PIR') || d.type.includes('SENSOR') || d.type.includes('TRANSFORMER')) &&
+            isWithinLast60Seconds(d.lastPing)
+        );
+        const hasRecentPiRoom = roomsRes.some(
+          (r) => r.source === 'PI' && (r.observedHeadcount > 0 || r.motionDetected)
+        );
+
+        if (hasRecentPiEvent || hasRecentPiDevice || hasRecentPiRoom) {
+          recordPiReading();
+        }
+      }
     } catch (err) {
       console.error('Failed to load campus telemetry data:', err);
-      setError('Unable to synchronize telemetry gateway feeds.');
+      if (isRealBackendMode) {
+        setBackendOffline(true);
+        // In HTTP mode, if the backend is unreachable: keep dataMode at SIMULATION and do not fall back silently to mock records
+        setRooms([]);
+        setAlerts([]);
+        setDevices([]);
+        setEvents([]);
+        setDataMode('SIMULATION');
+      } else {
+        setError('Unable to synchronize telemetry gateway feeds.');
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [recordPiReading]);
 
   useEffect(() => {
     loadAllData();
@@ -194,8 +334,33 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // dataMode becomes 'PI CONNECTED' only when a real reading with source 'PI' has arrived in the last 60 seconds, and reverts to 'SIMULATION' otherwise.
+  useEffect(() => {
+    const checkMode = () => {
+      if (devModeOverride !== null) {
+        setDataMode(devModeOverride);
+        return;
+      }
+      if (isRealBackendMode && backendOffline) {
+        setDataMode('SIMULATION');
+        return;
+      }
+      if (lastPiReadingTime && Date.now() - lastPiReadingTime < 60000) {
+        setDataMode('PI CONNECTED');
+      } else {
+        setDataMode('SIMULATION');
+      }
+    };
+    checkMode();
+    const interval = setInterval(checkMode, 1000);
+    return () => clearInterval(interval);
+  }, [lastPiReadingTime, devModeOverride, backendOffline]);
+
   const toggleDataMode = () => {
-    setDataMode((prev) => (prev === 'PI CONNECTED' ? 'SIMULATION' : 'PI CONNECTED'));
+    setDevModeOverride((prev) => {
+      const current = prev !== null ? prev : dataMode;
+      return current === 'PI CONNECTED' ? 'SIMULATION' : 'PI CONNECTED';
+    });
   };
 
   const toggleSidebar = () => {
@@ -312,8 +477,13 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setActiveScenarioId(scenarioId);
     setIsSimulationMode(true);
     setLoading(true);
-    await api.runScenario(scenarioId);
-    await loadAllData();
+    try {
+      await api.runScenario(scenarioId);
+      await loadAllData();
+    } catch (err) {
+      console.warn('Scenario run not implemented or failed (501):', err);
+      setLoading(false);
+    }
   };
 
   const activeAlertCount = alerts.filter((a) => a.status === 'ACTIVE').length;
@@ -331,6 +501,8 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         dataMode,
         setDataMode,
         toggleDataMode,
+        recordPiReading,
+        isDevMode,
         connectionStatus,
         reconnectConnection,
         currentUser,
@@ -357,6 +529,7 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isSidebarCollapsed,
         setIsSidebarCollapsed,
         toggleSidebar,
+        backendOffline,
       }}
     >
       {children}

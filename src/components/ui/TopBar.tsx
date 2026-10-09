@@ -13,6 +13,7 @@ import {
 import { useCampus } from '../../context/CampusContext';
 import { ThemeToggle } from './ThemeToggle';
 import { PriorityPill } from './PriorityPill';
+import { formatTime } from '../../utils/formatTime';
 
 export interface TopBarProps {
   currentPath: string;
@@ -28,6 +29,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const {
     dataMode,
     toggleDataMode,
+    isDevMode,
     connectionStatus,
     reconnectConnection,
     activeAlertCount,
@@ -106,15 +108,17 @@ export const TopBar: React.FC<TopBarProps> = ({
           </kbd>
         </button>
 
-        {/* Data Mode Indicator */}
-        <button
-          type="button"
-          onClick={toggleDataMode}
-          title="Click to toggle between PI CONNECTED and SIMULATION data mode"
-          className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] border text-[11px] font-mono uppercase font-semibold transition-colors cursor-pointer select-none ${
+        {/* Data Mode Indicator (Non-interactive indicator; hidden dev toggle behind ?dev=1) */}
+        <div
+          title={
+            dataMode === 'PI CONNECTED'
+              ? 'Real hardware telemetry stream active (verified reading in last 60s).'
+              : 'Simulation data mode active.'
+          }
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] border text-[11px] font-mono uppercase font-semibold select-none ${
             dataMode === 'PI CONNECTED'
               ? 'bg-accent-soft text-accent border-accent/30'
-              : 'bg-transparent text-muted border-dashed border-muted/50'
+              : 'bg-transparent text-muted border-dashed border-hairline'
           }`}
         >
           <span
@@ -122,8 +126,19 @@ export const TopBar: React.FC<TopBarProps> = ({
               dataMode === 'PI CONNECTED' ? 'bg-accent animate-pulse' : 'bg-muted'
             }`}
           />
-          <span>{dataMode}</span>
-        </button>
+          <span>{dataMode === 'PI CONNECTED' ? 'PI CONNECTED' : 'SIMULATION'}</span>
+
+          {isDevMode && (
+            <button
+              type="button"
+              onClick={toggleDataMode}
+              title="Dev-only manual toggle (?dev=1)"
+              className="ml-1 px-1.5 py-0.5 rounded bg-surface border border-accent/40 text-accent text-[9px] hover:bg-accent hover:text-white cursor-pointer"
+            >
+              Toggle
+            </button>
+          )}
+        </div>
 
         {/* Backend Connection Indicator (Connected / Reconnecting / Offline) */}
         <button
@@ -226,7 +241,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                       </div>
                       <p className="text-[12px] text-muted line-clamp-1">{a.title}</p>
                       <span className="text-[10px] font-mono text-muted block">
-                        {a.timestamp} · {a.energyImpactKw > 0 ? `+${a.energyImpactKw} kW` : 'No load'}
+                        {formatTime(a.timestamp)} · {a.energyImpactKw > 0 ? `+${a.energyImpactKw} kW` : 'No load'}
                       </span>
                     </div>
                   ))

@@ -55,7 +55,7 @@ export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
             <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
               Campus Spaces Directory
             </span>
-            <SourceBadge source="LIVE" size="sm" />
+            <SourceBadge source="SIMULATED" size="sm" />
             <span className="text-[11px] font-mono text-muted">demo data</span>
           </div>
           <h1 className="text-[28px] font-semibold tracking-tight text-ink">
@@ -158,8 +158,11 @@ export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
                           {room.currentClass}
                         </div>
                         <div className="font-mono text-[11px] text-muted flex items-center justify-between mt-1">
-                          <span>{room.classCode} · {room.section}</span>
-                          <span>{room.classTime}</span>
+                          <span>
+                            {room.classCode || '--'}
+                            {room.section ? ` · ${room.section}` : ''}
+                          </span>
+                          <span>{room.classTime || '--'}</span>
                         </div>
                       </div>
                     ) : (
@@ -179,12 +182,12 @@ export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
                             hasDiscrepancy ? 'text-status-orange' : 'text-ink'
                           }`}
                         >
-                          {room.observedHeadcount}
+                          {room.observedHeadcount != null ? room.observedHeadcount : '--'}
                         </span>
-                        <span className="text-muted">/ {room.capacity}</span>
+                        <span className="text-muted">/ {room.capacity != null ? room.capacity : '--'}</span>
                       </div>
                       <span className="text-[10px] text-muted">
-                        Expected: {room.expectedOccupancy}
+                        Expected: {room.expectedOccupancy != null ? room.expectedOccupancy : '--'}
                       </span>
                     </div>
 
@@ -194,12 +197,12 @@ export const RoomsPage: React.FC<RoomsPageProps> = ({ onNavigate }) => {
                       </span>
                       <div className="flex items-baseline gap-1 font-mono">
                         <span className="text-[16px] font-bold text-ink">
-                          {room.energyKw.toFixed(1)}
+                          {room.energyKw != null ? room.energyKw.toFixed(1) : '--'}
                         </span>
                         <span className="text-muted">kW</span>
                       </div>
                       <span className="text-[10px] text-muted">
-                        HVAC: {room.hvacStatus}
+                        HVAC: {room.hvacStatus || '--'}
                       </span>
                     </div>
                   </div>

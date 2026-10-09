@@ -3,6 +3,8 @@ import { Calendar, Clock, CheckCircle2 } from 'lucide-react';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
 
+import { Room } from '../../types';
+
 interface TimetableSlot {
   id: string;
   subject: string;
@@ -57,7 +59,12 @@ const lh204Schedule: TimetableSlot[] = [
   },
 ];
 
-export const RoomTimetableCard: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const RoomTimetableCard: React.FC<{ room?: Room | null; className?: string }> = ({
+  room,
+  className = '',
+}) => {
+  const isUnscheduled = room && !room.currentClass;
+
   return (
     <Card className={className}>
       <CardHeader>
@@ -66,16 +73,21 @@ export const RoomTimetableCard: React.FC<{ className?: string }> = ({ className 
             <Calendar className="w-4 h-4 text-muted" />
             <CardTitle className="text-[18px]">Today’s Schedule</CardTitle>
           </div>
-          <SourceBadge source="SIMULATED" size="sm" />
+          <SourceBadge source={room?.source || 'SIMULATED'} size="sm" />
         </div>
         <CardDescription>
-          Synchronized daily timetable blocks for Lecture Hall 204.
+          {room ? `Timetable blocks for ${room.name}.` : 'Synchronized daily timetable blocks for Lecture Hall 204.'}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <div className="space-y-2.5">
-          {lh204Schedule.map((slot) => {
+        {isUnscheduled ? (
+          <div className="p-6 text-center text-muted italic text-[13px] rounded-[8px] bg-surface-2 border border-hairline">
+            No academic classes scheduled for this space today. Space maintained on standby.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {lh204Schedule.map((slot) => {
             const isActive = slot.status === 'ACTIVE';
             const isCompleted = slot.status === 'COMPLETED';
 
@@ -126,6 +138,7 @@ export const RoomTimetableCard: React.FC<{ className?: string }> = ({ className 
             );
           })}
         </div>
+        )}
       </CardContent>
     </Card>
   );

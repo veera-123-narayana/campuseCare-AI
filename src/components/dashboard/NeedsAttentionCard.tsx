@@ -5,6 +5,7 @@ import { PriorityPill } from '../ui/PriorityPill';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Button } from '../ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
+import { formatTime } from '../../utils/formatTime';
 
 interface NeedsAttentionCardProps {
   alerts: Alert[];
@@ -98,7 +99,7 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
                     <div className="flex items-center gap-1.5 shrink-0">
                       <PriorityPill priority={alert.priority} size="sm" />
                       <span className="font-mono text-[11px] text-muted whitespace-nowrap">
-                        {getRelativeTime(alert.timestamp, idx)}
+                        {formatTime(alert.timestamp)}
                       </span>
                     </div>
                   </div>

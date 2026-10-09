@@ -1,14 +1,16 @@
 import React from 'react';
 import { Clock, CheckCircle2, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { DataSourceType } from '../../types';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
+import { formatTime } from '../../utils/formatTime';
 
 interface TimelineStep {
   time: string;
   title: string;
   detail: string;
   status: 'normal' | 'attention' | 'review' | 'critical';
-  source: 'SIMULATED' | 'PI' | 'LIVE';
+  source: DataSourceType;
   active?: boolean;
 }
 
@@ -30,21 +32,21 @@ const defaultSteps: TimelineStep[] = [
     title: 'Commencement Delay Flagged',
     detail: 'T + 5m threshold reached with 0 vision headcount. Operational status set to attention.',
     status: 'attention',
-    source: 'LIVE',
+    source: 'SIMULATED',
   },
   {
     time: '10:10:00',
     title: 'Configured Grace Period Exceeded',
     detail: 'Configured 10-minute grace window expired without PIR motion sensor confirmation.',
     status: 'review',
-    source: 'PI',
+    source: 'SIMULATED',
   },
   {
     time: '10:10:02',
     title: 'Review Raised (Awaiting Operator Action)',
     detail: 'Rule COMMENCEMENT_GRACE_EXCEEDED activated. Operational review ticket generated for Department Coordinator.',
     status: 'review',
-    source: 'LIVE',
+    source: 'SIMULATED',
     active: true,
   },
 ];
@@ -106,7 +108,7 @@ export const RoomTimelineCard: React.FC<RoomTimelineCardProps> = ({
                     <div className="flex items-center gap-2">
                       <SourceBadge source={step.source} size="sm" />
                       <span className="font-mono text-[11px] text-muted tabular-nums">
-                        {step.time}
+                        {formatTime(step.time)}
                       </span>
                     </div>
                   </div>

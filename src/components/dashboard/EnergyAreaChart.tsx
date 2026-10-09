@@ -9,9 +9,11 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
+import { Zap } from 'lucide-react';
 import { EnergyHourlyPoint } from '../../types';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
+import { EmptyState } from '../ui/EmptyState';
 
 interface EnergyAreaChartProps {
   data: EnergyHourlyPoint[];
@@ -24,6 +26,40 @@ export const EnergyAreaChart: React.FC<EnergyAreaChartProps> = ({
   timeframe,
   className = '',
 }) => {
+  if (!data || data.length === 0) {
+    return (
+      <Card className={`flex flex-col justify-between ${className}`}>
+        <div>
+          <CardHeader>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
+                    Facility Power Profile
+                  </span>
+                  <SourceBadge source="SIMULATED" size="sm" />
+                </div>
+                <CardTitle className="text-[20px]">
+                  {timeframe === 'Today' ? 'Energy Today' : 'Energy This Week'}
+                </CardTitle>
+              </div>
+            </div>
+            <CardDescription>
+              Substation sub-meter power curve vs timetable scheduled expectation.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="py-12">
+            <EmptyState
+              icon={<Zap className="w-6 h-6 text-muted" />}
+              title="No data yet. This feed is not built."
+            />
+          </CardContent>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className={`flex flex-col justify-between ${className}`}>
       <div>
@@ -34,7 +70,7 @@ export const EnergyAreaChart: React.FC<EnergyAreaChartProps> = ({
                 <span className="text-[11px] font-mono uppercase tracking-wider text-muted font-semibold">
                   Facility Power Profile
                 </span>
-                <SourceBadge source="LIVE" size="sm" />
+                <SourceBadge source={data[0]?.source || 'SIMULATED'} size="sm" />
               </div>
               <CardTitle className="text-[20px]">
                 {timeframe === 'Today' ? 'Energy Today' : 'Energy This Week'}
@@ -149,11 +185,17 @@ export const EnergyAreaChart: React.FC<EnergyAreaChartProps> = ({
         </CardContent>
       </div>
 
-      <div className="pt-3 border-t border-hairline flex flex-wrap items-center justify-between text-[11px] font-mono text-muted">
-        <span>Current instantaneous sub-station load: 17.8 kW</span>
-        <span className="text-status-green font-semibold">
-          Avoided carbon today: 48.7 kg CO₂
-        </span>
+      <div className="pt-3 border-t border-hairline flex flex-wrap items-center justify-between text-[11px] font-mono text-muted gap-2">
+        <div className="flex items-center gap-1.5">
+          <span>Current instantaneous sub-station load: 17.8 kW</span>
+          <SourceBadge source={data[0]?.source || 'SIMULATED'} size="sm" />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-status-green font-semibold">
+            Avoided carbon today: 48.7 kg CO₂
+          </span>
+          <SourceBadge source="SIMULATED" size="sm" />
+        </div>
       </div>
     </Card>
   );

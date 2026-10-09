@@ -26,6 +26,7 @@ import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
+import { formatTime } from '../utils/formatTime';
 
 interface EmergencyPageProps {
   onNavigate: (path: string) => void;
@@ -366,7 +367,7 @@ export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
             <span className="text-[11px] font-mono uppercase tracking-wider text-status-red font-semibold">
               Emergency & Life-Safety Network
             </span>
-            <SourceBadge source="LIVE" size="sm" />
+            <SourceBadge source="SIMULATED" size="sm" />
             <span className="text-[11px] font-mono text-muted">24/7 Monitored</span>
           </div>
           <h1 className="text-[28px] font-semibold tracking-tight text-ink leading-tight">
@@ -603,7 +604,7 @@ export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
                         {stage}
                       </span>
                       <span className="font-mono text-[10px] text-muted block tabular-nums">
-                        {timestamp || 'Pending'}
+                        {timestamp ? formatTime(timestamp) : 'Pending'}
                       </span>
                     </div>
                   );

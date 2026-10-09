@@ -31,16 +31,24 @@ interface RoomDetailPageProps {
 }
 
 export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNavigate }) => {
-  const { acknowledgeAlert, loading: contextLoading } = useCampus();
+  const { rooms, acknowledgeAlert, loading: contextLoading } = useCampus();
+  const currentRoom = rooms.find((r) => r.id === roomId || r.number === roomId || `room-${r.number}` === roomId);
 
   // Interactive Live States
-  const [headcount, setHeadcount] = useState<number>(0);
+  const [headcount, setHeadcount] = useState<number>(() => currentRoom?.observedHeadcount ?? 0);
   const [lightsOn, setLightsOn] = useState<boolean>(true);
   const [fanOn, setFanOn] = useState<boolean>(true);
   const [activeSimulationState, setActiveSimulationState] = useState<DecisionState['stateKey']>('review');
   const [isSimulateModalOpen, setIsSimulateModalOpen] = useState<boolean>(false);
   const [acknowledged, setAcknowledged] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Synchronize with currentRoom when loaded
+  useEffect(() => {
+    if (currentRoom) {
+      setHeadcount(currentRoom.observedHeadcount ?? 0);
+    }
+  }, [currentRoom]);
 
   // Synchronize headcount with manual simulation state if triggered
   const handleSelectScenarioState = (stateKey: DecisionState['stateKey']) => {
@@ -95,6 +103,10 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
 
   // Compute Decision State dynamically based on interactive variables
   const getComputedDecision = (): DecisionState => {
+    const defaultSubject = currentRoom?.currentClass || (currentRoom ? 'Unscheduled' : 'Artificial Intelligence (AI-401)');
+    const defaultCount = currentRoom?.expectedOccupancy ?? 60;
+    const defaultTime = currentRoom?.classTime || (currentRoom ? '--' : '10:00 - 11:00');
+
     if (activeSimulationState === 'offline') {
       return {
         stateKey: 'offline',
@@ -103,11 +115,11 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
         ruleTag: 'RULE: DEVICE_HEARTBEAT_TIMEOUT',
         confidence: 0,
         explanation:
-          'Ceiling vision inference node (CAM-204) heartbeat timed out for 45 seconds. Physical link down on PoE switch port 14.',
-        recommendedAction: 'Inspect edge Raspberry Pi PoE connection or verify subnet routing.',
-        expectedSubject: 'Artificial Intelligence (AI-401)',
-        expectedCount: 60,
-        expectedTime: '10:00 - 11:00',
+          'Camera node (laptop/phone) heartbeat timed out for 45 seconds. Physical link down.',
+        recommendedAction: 'Inspect edge Raspberry Pi connection or verify subnet routing.',
+        expectedSubject: defaultSubject,
+        expectedCount: defaultCount,
+        expectedTime: defaultTime,
         observedCount: 0,
         observedMotion: 'Telemetry Unavailable',
         observedPower: currentPowerKw,
@@ -165,9 +177,9 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
         explanation:
           'Observed headcount matches timetable booking within nominal bounds. Climate conditioning and high-bay lighting fully verified.',
         recommendedAction: 'Standard comfort envelope maintained. No operational intervention required.',
-        expectedSubject: 'Artificial Intelligence (AI-401)',
-        expectedCount: 60,
-        expectedTime: '10:00 - 11:00',
+        expectedSubject: defaultSubject,
+        expectedCount: defaultCount,
+        expectedTime: defaultTime,
         observedCount: headcount,
         observedMotion: 'Active (6 triggers/min)',
         observedPower: currentPowerKw,
@@ -185,9 +197,9 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
         explanation:
           'Early student ingress detected (headcount below 30% capacity). Class commencement in progress within grace monitoring period.',
         recommendedAction: 'Monitor through remaining grace window before initiating setback.',
-        expectedSubject: 'Artificial Intelligence (AI-401)',
-        expectedCount: 60,
-        expectedTime: '10:00 - 11:00',
+        expectedSubject: defaultSubject,
+        expectedCount: defaultCount,
+        expectedTime: defaultTime,
         observedCount: headcount,
         observedMotion: 'Intermittent ingress',
         observedPower: currentPowerKw,
@@ -205,9 +217,9 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
       explanation:
         'Classroom activity has not been confirmed within the configured grace period (10 min). Operational review initiated.',
       recommendedAction: 'Verify the schedule or notify the department coordinator.',
-      expectedSubject: 'Artificial Intelligence (AI-401)',
-      expectedCount: 60,
-      expectedTime: '10:00 - 11:00',
+      expectedSubject: defaultSubject,
+      expectedCount: defaultCount,
+      expectedTime: defaultTime,
       observedCount: headcount,
       observedMotion: 'Idle (0 triggers past grace)',
       observedPower: currentPowerKw,
@@ -256,18 +268,18 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
               Rooms
             </button>
             <span>/</span>
-            <span>CSE Block</span>
+            <span>{currentRoom?.block || 'CSE Block'}</span>
             <span>/</span>
-            <span className="text-ink font-semibold">LH-204</span>
+            <span className="text-ink font-semibold">{currentRoom?.number ? `LH-${currentRoom.number}` : 'LH-204'}</span>
           </nav>
 
           {/* Room Name (28 Page Title) + Badges */}
           <div className="flex flex-wrap items-center gap-3 pt-0.5">
             <h1 className="text-[28px] font-semibold tracking-tight text-ink leading-tight">
-              Lecture Hall 204, CSE Block, 2nd Floor
+              {currentRoom?.name || 'Lecture Hall 204, CSE Block, 2nd Floor'}
             </h1>
             <StatusBadge status={operationalStatus} size="md" />
-            <SourceBadge source="LIVE" size="md" />
+            <SourceBadge source={currentRoom?.source || 'SIMULATED'} size="md" />
           </div>
         </div>
 
@@ -313,48 +325,58 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
         {/* Metric 1: Occupancy */}
         <MetricTile
           label="Observed Occupancy"
-          value={`${headcount} people`}
-          unit={`/ 60 seats`}
+          value={headcount != null ? `${headcount} people` : '--'}
+          unit={currentRoom?.capacity != null ? `/ ${currentRoom.capacity} seats` : `/ 60 seats`}
           delta={{
             value: headcount === 0 ? '-60 vs timetable' : `${headcount} active`,
             trend: headcount === 0 ? 'down' : 'up',
             isPositive: headcount > 0,
           }}
-          source="LIVE"
+          source={currentRoom?.source || 'SIMULATED'}
           subtext="Ceiling camera vision count"
         />
 
         {/* Metric 2: Expected State */}
         <MetricTile
           label="Expected State"
-          value={activeSimulationState === 'no_class' ? 'VACANT_SETBACK' : 'CLASS_ACTIVE'}
-          delta={{ value: '10:00 - 11:00 slot', trend: 'neutral', isPositive: true }}
-          source="SIMULATED"
+          value={
+            currentRoom && !currentRoom.currentClass
+              ? 'VACANT_SETBACK'
+              : activeSimulationState === 'no_class'
+              ? 'VACANT_SETBACK'
+              : 'CLASS_ACTIVE'
+          }
+          delta={{
+            value: currentRoom ? (currentRoom.classTime || 'Standby slot') : '10:00 - 11:00 slot',
+            trend: 'neutral',
+            isPositive: true,
+          }}
+          source={currentRoom?.source || 'SIMULATED'}
           subtext="Academic timetable database"
         />
 
         {/* Metric 3: Temperature */}
         <MetricTile
           label="Ambient Temperature"
-          value={decision.observedTemp.toFixed(1)}
+          value={decision.observedTemp != null ? decision.observedTemp.toFixed(1) : '--'}
           unit="°C"
           delta={{ value: '+0.8°C vs setpoint', trend: 'up', isPositive: false }}
-          source="PI"
+          source={currentRoom?.source || 'SIMULATED'}
           subtext="ESP32 bus sensor #12"
         />
 
         {/* Metric 4: Current Power */}
         <MetricTile
           label="Current Power Draw"
-          value={currentPowerKw.toFixed(2)}
+          value={currentPowerKw != null ? currentPowerKw.toFixed(2) : '--'}
           unit="kW"
           delta={{
             value: currentPowerKw > 0.5 ? 'Active lighting + fan' : 'Setback baseline',
             trend: currentPowerKw > 0.5 ? 'up' : 'down',
             isPositive: currentPowerKw <= 0.5,
           }}
-          source="PI"
-          subtext="Sub-meter branch CT-204"
+          source="SIMULATED"
+          subtext="Sub-meter branch CT-204 (Not installed · Simulated)"
         />
       </div>
 
@@ -401,8 +423,8 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
             onFanChange={setFanOn}
           />
 
-          {/* Card G: Today's Timetable for LH-204 */}
-          <RoomTimetableCard />
+          {/* Card G: Today's Timetable */}
+          <RoomTimetableCard room={currentRoom} />
         </div>
       </div>
 

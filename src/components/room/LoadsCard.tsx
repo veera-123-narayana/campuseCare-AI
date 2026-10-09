@@ -31,7 +31,7 @@ export const LoadsCard: React.FC<LoadsCardProps> = ({
             <Zap className="w-4 h-4 text-muted" />
             <CardTitle className="text-[18px]">Relay Load Controls</CardTitle>
           </div>
-          <SourceBadge source="PI" size="sm" />
+          <SourceBadge source="SIMULATED" size="sm" />
         </div>
         <CardDescription>
           Digital relay state indicators and simulated manual override switches.

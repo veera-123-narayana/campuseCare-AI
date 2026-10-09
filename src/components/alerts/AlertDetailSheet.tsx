@@ -18,6 +18,7 @@ import { Alert, PriorityLevel } from '../../types';
 import { PriorityPill } from '../ui/PriorityPill';
 import { SourceBadge } from '../ui/SourceBadge';
 import { Button } from '../ui/Button';
+import { formatTime } from '../../utils/formatTime';
 
 interface AlertDetailSheetProps {
   alert: Alert | null;
@@ -117,7 +118,7 @@ export const AlertDetailSheet: React.FC<AlertDetailSheetProps> = ({
               <PriorityPill priority={alert.priority} size="sm" />
               <SourceBadge source={alert.source} size="sm" />
               <span className="text-[12px] font-mono text-muted">
-                {alert.age || alert.timestamp}
+                {alert.age || formatTime(alert.timestamp)}
               </span>
             </div>
             <h3 className="text-[18px] font-bold tracking-tight text-ink leading-snug">
@@ -237,7 +238,7 @@ export const AlertDetailSheet: React.FC<AlertDetailSheetProps> = ({
                       <span className="font-semibold text-ink uppercase">
                         {entry.status}
                       </span>
-                      <span className="text-muted tabular-nums">{entry.timestamp}</span>
+                      <span className="text-muted tabular-nums">{formatTime(entry.timestamp)}</span>
                     </div>
                     <p className="text-[12px] text-muted leading-tight">{entry.note}</p>
                     <span className="text-[10px] font-mono text-muted block pt-0.5">
