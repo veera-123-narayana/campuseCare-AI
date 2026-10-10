@@ -24,6 +24,7 @@ import { SensorsCard } from '../components/room/SensorsCard';
 import { LoadsCard } from '../components/room/LoadsCard';
 import { RoomTimetableCard } from '../components/room/RoomTimetableCard';
 import { SimulationModal } from '../components/room/SimulationModal';
+import { ClassroomCameraDemoCard } from '../components/room/ClassroomCameraDemoCard';
 
 interface RoomDetailPageProps {
   roomId: string;
@@ -31,7 +32,7 @@ interface RoomDetailPageProps {
 }
 
 export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNavigate }) => {
-  const { rooms, acknowledgeAlert, loading: contextLoading } = useCampus();
+  const { rooms, acknowledgeAlert, loading: contextLoading, dataMode, updateRoomLive } = useCampus();
   const currentRoom = rooms.find((r) => r.id === roomId || r.number === roomId || `room-${r.number}` === roomId);
 
   // Interactive Live States
@@ -406,6 +407,19 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
             headcount={headcount}
             onHeadcountChange={handleHeadcountChange}
           />
+
+          {/* Classroom Camera Demo (Browser) - shown only for room-204 directly below CameraFeedCard */}
+          {(roomId === 'room-204' || currentRoom?.id === 'room-204' || currentRoom?.number === '204') && (
+            <ClassroomCameraDemoCard
+              isSimulationMode={dataMode === 'SIMULATION'}
+              onFaceCountChange={(demoFaceCount, isRunning) => {
+                if (isRunning && dataMode === 'SIMULATION') {
+                  handleHeadcountChange(demoFaceCount);
+                  updateRoomLive('room-204', { observedHeadcount: demoFaceCount });
+                }
+              }}
+            />
+          )}
 
           {/* Card E: Sensors Card with Sparklines */}
           <SensorsCard

@@ -29,6 +29,7 @@ import { SourceBadge } from '../components/ui/SourceBadge';
 import { PriorityPill } from '../components/ui/PriorityPill';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
+import { PiPhoneCameraSetupCard } from '../components/demo/PiPhoneCameraSetupCard';
 import { PriorityLevel } from '../types';
 
 interface DemoPageProps {
@@ -598,6 +599,9 @@ export const DemoPage: React.FC<DemoPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       )}
+
+      {/* Pi + phone camera + IR setup card */}
+      <PiPhoneCameraSetupCard />
 
       {/* Real-Time Hardware Pipeline Stepper (lights up stage by stage over ~3s) */}
       <Card className="border border-hairline shadow-2xs">

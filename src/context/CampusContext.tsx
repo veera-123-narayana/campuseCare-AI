@@ -9,6 +9,7 @@ import {
   UserProfile,
   UserRole,
 } from '../types';
+import { NoticeboardEventItem } from '../types/noticeboard';
 import { api, isRealBackendMode, setPiReadingListener } from '../services/api';
 import { useLiveEvents, ConnectionStatus } from '../hooks/useLiveEvents';
 
@@ -66,6 +67,10 @@ interface CampusContextType {
   setIsSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
   backendOffline: boolean;
+  noticeboardEvents: NoticeboardEventItem[];
+  addNoticeboardEvent: (event: Omit<NoticeboardEventItem, 'id'>) => void;
+  removeNoticeboardEvent: (id: string) => void;
+  toggleNoticeboardEventApproval: (id: string, approved: boolean) => void;
 }
 
 const defaultUserProfiles: Record<UserRole, UserProfile> = {
@@ -171,6 +176,36 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isSimulationMode, setIsSimulationMode] = useState<boolean>(true);
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   const [isDeviceOfflineSimulated, setIsDeviceOfflineSimulated] = useState<boolean>(false);
+  const [noticeboardEvents, setNoticeboardEvents] = useState<NoticeboardEventItem[]>([
+    {
+      id: 'evt-default-1',
+      title: 'Department Faculty Meeting (CSE)',
+      date: new Date().toISOString().split('T')[0],
+      startTime: '09:00',
+      endTime: '18:00',
+      affectedRooms: ['room-204'],
+      note: 'Simulated faculty administrative meeting on noticeboard.',
+      approved: false,
+    },
+  ]);
+
+  const addNoticeboardEvent = useCallback((event: Omit<NoticeboardEventItem, 'id'>) => {
+    const newId = `evt-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    setNoticeboardEvents((prev) => [
+      ...prev,
+      { ...event, id: newId },
+    ]);
+  }, []);
+
+  const removeNoticeboardEvent = useCallback((id: string) => {
+    setNoticeboardEvents((prev) => prev.filter((e) => e.id !== id));
+  }, []);
+
+  const toggleNoticeboardEventApproval = useCallback((id: string, approved: boolean) => {
+    setNoticeboardEvents((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, approved } : e))
+    );
+  }, []);
 
   // Set the Pi-connected timestamp when dashboard receives qualifying PI telemetry in HTTP mode
   // In mock mode, this path must never run
@@ -530,6 +565,10 @@ export const CampusProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsSidebarCollapsed,
         toggleSidebar,
         backendOffline,
+        noticeboardEvents,
+        addNoticeboardEvent,
+        removeNoticeboardEvent,
+        toggleNoticeboardEventApproval,
       }}
     >
       {children}
