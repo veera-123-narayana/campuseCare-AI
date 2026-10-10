@@ -1,6 +1,8 @@
 {
   "name": "CAMPUSCARE",
   "description": "Smart-campus sustainability and safety intelligence platform aligning expected vs observed occupancy for UN SDG 11.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": [
+    "camera"
+  ],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

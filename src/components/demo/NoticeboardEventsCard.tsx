@@ -327,9 +327,21 @@ export const NoticeboardEventsCard: React.FC = () => {
                         </p>
                       )}
 
-                      <p className="text-[11px] text-muted">
-                        Entered by a person. Not read from the noticeboard.
-                      </p>
+                      <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                        <span className="text-[11px] text-muted">
+                          Entered by a person. Not read from the noticeboard.
+                        </span>
+                        <span className="text-hairline">·</span>
+                        <a
+                          href={NOTICEBOARD_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono text-accent hover:underline"
+                        >
+                          <span>Open Noticeboard</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-4 shrink-0 justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-hairline">
@@ -337,7 +349,7 @@ export const NoticeboardEventsCard: React.FC = () => {
                         <Switch
                           checked={evt.approved}
                           onChange={(val) => toggleNoticeboardEventApproval(evt.id, val)}
-                          label="Approved"
+                          label="Event approved by a person"
                         />
                       </div>
 

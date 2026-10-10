@@ -5,7 +5,7 @@ import { SourceBadge } from '../ui/SourceBadge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/Card';
 import { formatTime } from '../../utils/formatTime';
 
-interface TimelineStep {
+export interface TimelineStep {
   time: string;
   title: string;
   detail: string;
@@ -14,12 +14,12 @@ interface TimelineStep {
   active?: boolean;
 }
 
-interface RoomTimelineCardProps {
+export interface RoomTimelineCardProps {
   steps?: TimelineStep[];
   className?: string;
 }
 
-const defaultSteps: TimelineStep[] = [
+export const defaultSteps: TimelineStep[] = [
   {
     time: '10:00:00',
     title: 'Class Expected (Timetable Window Start)',

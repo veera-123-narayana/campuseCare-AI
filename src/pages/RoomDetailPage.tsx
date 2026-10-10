@@ -15,9 +15,10 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { SourceBadge } from '../components/ui/SourceBadge';
 import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
+import { Toast } from '../components/ui/Toast';
 
 import { IntelligenceResultCard, DecisionState } from '../components/room/IntelligenceResultCard';
-import { RoomTimelineCard } from '../components/room/RoomTimelineCard';
+import { RoomTimelineCard, defaultSteps, TimelineStep } from '../components/room/RoomTimelineCard';
 import { Occupancy24hChart } from '../components/room/Occupancy24hChart';
 import { CameraFeedCard } from '../components/room/CameraFeedCard';
 import { SensorsCard } from '../components/room/SensorsCard';
@@ -25,6 +26,7 @@ import { LoadsCard } from '../components/room/LoadsCard';
 import { RoomTimetableCard } from '../components/room/RoomTimetableCard';
 import { SimulationModal } from '../components/room/SimulationModal';
 import { ClassroomCameraDemoCard } from '../components/room/ClassroomCameraDemoCard';
+import { getEventStatus } from '../types/noticeboard';
 
 interface RoomDetailPageProps {
   roomId: string;
@@ -32,7 +34,15 @@ interface RoomDetailPageProps {
 }
 
 export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNavigate }) => {
-  const { rooms, acknowledgeAlert, loading: contextLoading, dataMode, updateRoomLive } = useCampus();
+  const {
+    rooms,
+    acknowledgeAlert,
+    loading: contextLoading,
+    dataMode,
+    updateRoomLive,
+    noticeboardEvents,
+    isDeviceOfflineSimulated,
+  } = useCampus();
   const currentRoom = rooms.find((r) => r.id === roomId || r.number === roomId || `room-${r.number}` === roomId);
 
   // Interactive Live States
@@ -43,6 +53,66 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
   const [isSimulateModalOpen, setIsSimulateModalOpen] = useState<boolean>(false);
   const [acknowledged, setAcknowledged] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Check if an approved noticeboard event is In progress for this room
+  const approvedEventInProgress = noticeboardEvents.find((evt) => {
+    if (!evt.approved) return false;
+    const isTarget =
+      evt.affectedRooms.includes(roomId) ||
+      evt.affectedRooms.includes('room-204') ||
+      (currentRoom?.number && evt.affectedRooms.includes(`room-${currentRoom.number}`));
+    if (!isTarget) return false;
+    return getEventStatus(evt.date, evt.startTime, evt.endTime) === 'In progress';
+  });
+
+  // Timeline events state tracking both audit trace and autonomous setback events
+  const [timelineSteps, setTimelineSteps] = useState<TimelineStep[]>(defaultSteps);
+
+  const handleActionLogged = (entry: {
+    title: string;
+    detail: string;
+    status: 'normal' | 'attention' | 'review' | 'critical';
+  }) => {
+    const now = new Date().toTimeString().split(' ')[0];
+    const newStep: TimelineStep = {
+      time: now,
+      title: entry.title,
+      detail: entry.detail,
+      status: entry.status,
+      source: 'SIMULATED',
+      active: true,
+    };
+    setTimelineSteps((prev) => [
+      newStep,
+      ...prev.map((s) => ({ ...s, active: false })),
+    ]);
+  };
+
+  // Toast state for automatic actions and alerts
+  const [activeToast, setActiveToast] = useState<{
+    title: string;
+    message?: string;
+    type?: 'info' | 'success' | 'warning' | 'danger';
+  } | null>(null);
+
+  const handleToast = (
+    message: string,
+    title?: string,
+    type?: 'info' | 'success' | 'warning' | 'danger'
+  ) => {
+    setActiveToast({
+      title: title || 'Setback Action',
+      message,
+      type: type || 'info',
+    });
+  };
+
+  useEffect(() => {
+    if (activeToast) {
+      const t = setTimeout(() => setActiveToast(null), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [activeToast]);
 
   // Synchronize with currentRoom when loaded
   useEffect(() => {
@@ -205,6 +275,26 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
         observedMotion: 'Intermittent ingress',
         observedPower: currentPowerKw,
         observedTemp: 27.9,
+      };
+    }
+
+    // Event aware: if approved event is in progress and room is empty, review notice is suppressed
+    if (approvedEventInProgress && headcount === 0) {
+      return {
+        stateKey: 'normal',
+        eventName: 'Event in progress - empty as expected',
+        priority: 'GREEN',
+        ruleTag: 'RULE: APPROVED_NOTICEBOARD_EVENT',
+        confidence: 99,
+        explanation: `Approved noticeboard event '${approvedEventInProgress.title}' in progress explaining vacant state. Class commencement review notice suppressed for this window.`,
+        recommendedAction: 'Autonomous energy setback engaged. High-bay lights and fans set back.',
+        expectedSubject: approvedEventInProgress.title,
+        expectedCount: 0,
+        expectedTime: `${approvedEventInProgress.startTime} - ${approvedEventInProgress.endTime}`,
+        observedCount: 0,
+        observedMotion: 'Idle (0 triggers)',
+        observedPower: currentPowerKw,
+        observedTemp: 24.2,
       };
     }
 
@@ -394,7 +484,7 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
           />
 
           {/* Card B: "How we got here" Timeline */}
-          <RoomTimelineCard />
+          <RoomTimelineCard steps={timelineSteps} />
 
           {/* Card C: 24-hour occupancy chart with shaded class band */}
           <Occupancy24hChart currentObserved={headcount} />
@@ -431,16 +521,37 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
 
           {/* Card F: Loads Card with Switches */}
           <LoadsCard
+            roomId={roomId}
+            roomNumber={currentRoom?.number || '204'}
+            headcount={headcount}
+            motionDetected={headcount > 0}
+            isDataFresh={!isDeviceOfflineSimulated && activeSimulationState !== 'offline'}
+            isGracePeriod={activeSimulationState === 'started_late'}
+            approvedEvent={approvedEventInProgress || null}
             lightsOn={lightsOn}
             onLightsChange={setLightsOn}
             fanOn={fanOn}
             onFanChange={setFanOn}
+            onActionLogged={handleActionLogged}
+            onToast={handleToast}
           />
 
           {/* Card G: Today's Timetable */}
           <RoomTimetableCard room={currentRoom} />
         </div>
       </div>
+
+      {/* Floating Toast Notification */}
+      {activeToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <Toast
+            type={activeToast.type}
+            title={activeToast.title}
+            message={activeToast.message}
+            onDismiss={() => setActiveToast(null)}
+          />
+        </div>
+      )}
 
       {/* Simulation Modal (Triggered by Header "Simulate" Button) */}
       <SimulationModal
