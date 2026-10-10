@@ -352,7 +352,7 @@ let alertsStore: Alert[] = [
     building: 'CSE Block Level 2',
     title: 'Classroom activity not confirmed',
     description:
-      'Timetable registers Artificial Intelligence (CSE-A, 10:00-11:00, capacity 60). Camera headcount reads 0 and PIR motion sensor registers no activity past the 15-minute grace threshold. High-bay lights and HVAC remain energized at 3.4 kW.',
+      'Timetable registers Artificial Intelligence (CSE-A, 10:00-11:00, capacity 60). Camera headcount reads 0 and IR / motion sensor registers no activity past the 15-minute grace threshold. High-bay lights and HVAC remain energized at 3.4 kW.',
     expectedState: 'Artificial Intelligence · 60 seats expected',
     observedState: 'Headcount 0 · IR motion idle · 3.4 kW',
     timeWindow: '10:00 - 11:00',
@@ -409,7 +409,7 @@ let alertsStore: Alert[] = [
     building: 'CSE Block Ground',
     title: 'Emergency perimeter hardware alert',
     description:
-      'Secondary egress door magnetic contact interrupted outside scheduled lab hours. PIR sensor detected localized motion near server rack.',
+      'Secondary egress door magnetic contact interrupted outside scheduled lab hours. IR / motion sensor detected localized motion near server rack.',
     expectedState: 'Secured Perimeter / Access Card Controlled',
     observedState: 'Door contact open · 1 person detected',
     timeWindow: 'Access Controlled',
@@ -689,7 +689,7 @@ let devicesStore: EdgeDevice[] = [
   {
     id: 'dev-1',
     deviceId: 'PI-CAM-204',
-    name: 'Ceiling Camera Headcount Node',
+    name: 'Camera node',
     type: 'PI_CAMERA',
     roomId: 'room-204',
     status: 'ONLINE',
@@ -702,7 +702,7 @@ let devicesStore: EdgeDevice[] = [
   {
     id: 'dev-2',
     deviceId: 'ESP32-PIR-204',
-    name: 'Dual PIR Motion Sensor',
+    name: 'IR / motion sensor (GPIO17)',
     type: 'ESP32_PIR',
     roomId: 'room-204',
     status: 'ONLINE',
@@ -715,7 +715,7 @@ let devicesStore: EdgeDevice[] = [
   {
     id: 'dev-3',
     deviceId: 'CT-SUB-204',
-    name: 'CT Power Clamp (Not installed)',
+    name: 'CT power clamp',
     type: 'CURRENT_TRANSFORMER',
     roomId: 'room-204',
     status: 'NOT_INSTALLED',
@@ -741,7 +741,7 @@ let devicesStore: EdgeDevice[] = [
   {
     id: 'dev-5',
     deviceId: 'ESP32-MAG-LAB01',
-    name: 'Door Contact Reed Switch (Not installed)',
+    name: 'Door contact',
     type: 'DOOR_CONTACT',
     roomId: 'room-lab-ai-01',
     status: 'NOT_INSTALLED',
@@ -754,13 +754,39 @@ let devicesStore: EdgeDevice[] = [
   {
     id: 'dev-6',
     deviceId: 'IAQ-204',
-    name: 'Air Quality IAQ Sensor (Not installed)',
+    name: 'Air quality',
     type: 'AIR_QUALITY',
     roomId: 'room-204',
     status: 'NOT_INSTALLED',
     ipAddress: '--',
     lastPing: 'Not installed',
     firmwareVersion: 'v1.0.0-sim',
+    source: 'SIMULATED',
+    note: 'demo data',
+  },
+  {
+    id: 'dev-7',
+    deviceId: 'ARDUINO-UNO-01',
+    name: 'Arduino Uno',
+    type: 'PI_GATEWAY',
+    roomId: 'room-204',
+    status: 'OFFLINE',
+    ipAddress: '--',
+    lastPing: '--',
+    firmwareVersion: '--',
+    source: 'SIMULATED',
+    note: 'demo data',
+  },
+  {
+    id: 'dev-8',
+    deviceId: 'ESP8266-01',
+    name: 'ESP8266',
+    type: 'PI_GATEWAY',
+    roomId: 'room-204',
+    status: 'OFFLINE',
+    ipAddress: '--',
+    lastPing: '--',
+    firmwareVersion: '--',
     source: 'SIMULATED',
     note: 'demo data',
   },
@@ -1657,7 +1683,7 @@ export const mockClient: ApiClient = {
         records: [
           {
             id: 'PI-CAM-204',
-            title: 'PI-CAM-204: Ceiling Camera Node',
+            title: 'PI-CAM-204: Camera node',
             subtitle: 'Last ping intermittent',
             category: 'Device',
             badge: 'DEGRADED',
@@ -1686,7 +1712,7 @@ export const mockClient: ApiClient = {
       sourceRecords.push(
         {
           id: 'dev-pi-cam-204',
-          title: 'PI-CAM-204 (Ceiling Camera Headcount)',
+          title: 'PI-CAM-204 (Camera node)',
           subtitle: 'Lecture Hall 204, CSE Level 2',
           category: 'Device',
           source: 'SIMULATED',
@@ -1710,7 +1736,7 @@ export const mockClient: ApiClient = {
       );
 
       answer =
-        'One edge node is flagged: Ceiling Camera Headcount Node (PI-CAM-204) in Room 204 has shown intermittent heartbeat packets during simulated link tests. All campus subnet gateways (PI-GW-CSE-02, PI-GW-MAIN-01) and PIR motion sensors are online with ping latency under 500ms.';
+        'One edge node is flagged: Camera node (PI-CAM-204) in Room 204 has shown intermittent heartbeat packets during simulated link tests. All campus subnet gateways (PI-GW-CSE-02, PI-GW-MAIN-01) and IR / motion sensors are online with ping latency under 500ms.';
       suggestedActions = [
         'Run Camera Ping Test',
         'Verify Floor 2 Subnet Switch',
@@ -1855,7 +1881,7 @@ export const mockClient: ApiClient = {
           source: 'SIMULATED',
           status: 'Access Controlled',
           badge: 'RED',
-          details: 'Capacity 40. Equipped with 8 edge robotics test benches and ceiling camera node.',
+          details: 'Capacity 40. Equipped with 8 edge robotics test benches and camera node.',
           link: '/rooms/room-lab-ai-01',
           metrics: { Location: 'CSE Ground', Capacity: 40, Type: 'Specialized Lab' },
         },
@@ -2074,7 +2100,7 @@ export const mockClient: ApiClient = {
       }
       return latency({
         name: 'Normal Class In Session',
-        description: 'Room 204 has 48 students verified by ceiling camera node, HVAC in comfort mode.',
+        description: 'Room 204 has 48 students verified by camera node, HVAC in comfort mode.',
         affectedRooms: roomsStore,
         note: 'demo data',
       });
@@ -2255,8 +2281,8 @@ export const mockClient: ApiClient = {
           roomId: 'room-204',
           roomName: 'Lecture Hall 204',
           block: 'CSE Block',
-          title: 'Vision node CAM-204-CEILING stream disconnected',
-          description: 'Ceiling camera node dropped RTSP frame feed. Campus Intelligence running in degraded mode on PIR motion.',
+          title: 'Vision node CAM-204 stream disconnected',
+          description: 'Camera node dropped RTSP frame feed. Campus Intelligence running in degraded mode on IR / motion sensor.',
           expectedState: '15 FPS RTSP stream active',
           observedState: '0 FPS (Connection refused)',
           gracePeriodMinutes: 1,
@@ -2271,7 +2297,7 @@ export const mockClient: ApiClient = {
       }
       return latency({
         name: 'Camera Vision Node Offline',
-        description: 'Ceiling camera inference node dropped frame stream. Triage downgraded to secondary PIR motion.',
+        description: 'Camera node inference node dropped frame stream. Triage downgraded to secondary IR / motion sensor.',
         affectedRooms: roomsStore,
         note: 'demo data',
       });

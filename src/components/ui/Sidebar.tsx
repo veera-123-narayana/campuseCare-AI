@@ -13,9 +13,12 @@ import {
   User,
   Shield,
   GraduationCap,
+  Megaphone,
+  ExternalLink,
 } from 'lucide-react';
 import { useCampus } from '../../context/CampusContext';
 import { UserRole } from '../../types';
+import { NOTICEBOARD_URL } from '../../constants';
 
 export interface SidebarProps {
   currentPath: string;
@@ -167,43 +170,69 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 : currentPath.startsWith(item.path);
 
             return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onNavigate(item.path)}
-                title={isSidebarCollapsed ? item.label : undefined}
-                className={`relative w-full flex items-center ${
-                  isSidebarCollapsed ? 'justify-center px-0' : 'justify-between px-3'
-                } py-2 rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer ${
-                  isActive
-                    ? 'bg-accent-soft text-accent font-semibold'
-                    : 'text-ink hover:bg-surface-2'
-                }`}
-              >
-                {/* 2px accent bar on the left for active item */}
-                {isActive && (
-                  <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-accent rounded-r" />
-                )}
-
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className={isActive ? 'text-accent' : 'text-muted'}>
-                    {item.icon}
-                  </span>
-                  {!isSidebarCollapsed && (
-                    <span className="truncate">{item.label}</span>
+              <React.Fragment key={item.id}>
+                <button
+                  type="button"
+                  onClick={() => onNavigate(item.path)}
+                  title={isSidebarCollapsed ? item.label : undefined}
+                  className={`relative w-full flex items-center ${
+                    isSidebarCollapsed ? 'justify-center px-0' : 'justify-between px-3'
+                  } py-2 rounded-[8px] text-[13px] font-medium transition-colors cursor-pointer ${
+                    isActive
+                      ? 'bg-accent-soft text-accent font-semibold'
+                      : 'text-ink hover:bg-surface-2'
+                  }`}
+                >
+                  {/* 2px accent bar on the left for active item */}
+                  {isActive && (
+                    <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-accent rounded-r" />
                   )}
-                </div>
 
-                {!isSidebarCollapsed && item.badge && (
-                  <span
-                    className={`font-mono text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-[4px] border ${
-                      item.badgeColor || 'bg-surface-2 text-muted border-hairline'
-                    }`}
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={isActive ? 'text-accent' : 'text-muted'}>
+                      {item.icon}
+                    </span>
+                    {!isSidebarCollapsed && (
+                      <span className="truncate">{item.label}</span>
+                    )}
+                  </div>
+
+                  {!isSidebarCollapsed && item.badge && (
+                    <span
+                      className={`font-mono text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-[4px] border ${
+                        item.badgeColor || 'bg-surface-2 text-muted border-hairline'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+
+                {/* Noticeboard External Link placed directly after Alerts */}
+                {item.id === 'alerts' && (
+                  <a
+                    href={NOTICEBOARD_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={isSidebarCollapsed ? 'Open Noticeboard (new tab)' : undefined}
+                    className={`w-full flex items-center ${
+                      isSidebarCollapsed ? 'justify-center px-0' : 'justify-between px-3'
+                    } py-2 rounded-[8px] text-[13px] font-medium text-ink hover:bg-surface-2 transition-colors cursor-pointer`}
                   >
-                    {item.badge}
-                  </span>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="text-muted">
+                        <Megaphone className="w-4 h-4 shrink-0" />
+                      </span>
+                      {!isSidebarCollapsed && (
+                        <span className="truncate">Noticeboard</span>
+                      )}
+                    </div>
+                    {!isSidebarCollapsed && (
+                      <ExternalLink className="w-3.5 h-3.5 text-muted shrink-0" />
+                    )}
+                  </a>
                 )}
-              </button>
+              </React.Fragment>
             );
           })}
         </nav>

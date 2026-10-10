@@ -29,7 +29,7 @@ export const SimulationModal: React.FC<SimulationModalProps> = ({
       key: 'review',
       title: 'Class Commencement Review (Default Hero State)',
       priority: 'ORANGE',
-      desc: 'Scheduled lecture (60 students). 10-minute grace window expired with 0 observed headcount and idle PIR motion.',
+      desc: 'Scheduled lecture (60 students). 10-minute grace window expired with 0 observed headcount and idle IR / motion sensor.',
     },
     {
       key: 'started_late',
@@ -59,7 +59,7 @@ export const SimulationModal: React.FC<SimulationModalProps> = ({
       key: 'offline',
       title: 'Camera Device Offline (Heartbeat Timeout)',
       priority: 'RED',
-      desc: 'Ceiling vision node heartbeat timed out past 30 seconds. Stream interrupted.',
+      desc: 'Camera node heartbeat timed out past 30 seconds. Stream interrupted.',
     },
   ];
 

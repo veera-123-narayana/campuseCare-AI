@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, X, Building2, BellRing, ArrowRight, CornerDownLeft } from 'lucide-react';
+import { Search, X, Building2, BellRing, ArrowRight, CornerDownLeft, Megaphone, ExternalLink } from 'lucide-react';
 import { useCampus } from '../../context/CampusContext';
 import { PriorityPill } from './PriorityPill';
 import { StatusBadge } from './StatusBadge';
+import { NOTICEBOARD_URL } from '../../constants';
 
 interface CommandPaletteProps {
   onNavigate: (path: string) => void;
@@ -55,6 +56,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ onNavigate }) =>
     setIsCommandPaletteOpen(false);
     onNavigate('/alerts');
   };
+
+  const handleOpenNoticeboard = () => {
+    setIsCommandPaletteOpen(false);
+    window.open(NOTICEBOARD_URL, '_blank', 'noopener,noreferrer');
+  };
+
+  const showNoticeboardOption =
+    !query.trim() ||
+    'open noticeboard'.includes(query.toLowerCase()) ||
+    'noticeboard'.includes(query.toLowerCase());
 
   return (
     <div
@@ -187,6 +198,40 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ onNavigate }) =>
               ))
             )}
           </div>
+
+          {/* External Links Section */}
+          {showNoticeboardOption && (
+            <div className="space-y-1.5 pt-3">
+              <div className="flex items-center justify-between px-2 text-[11px] font-mono uppercase text-muted tracking-wider">
+                <span>External Portals</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenNoticeboard}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-[8px] hover:bg-surface-2 text-left transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-[6px] bg-surface-2 border border-hairline flex items-center justify-center shrink-0">
+                    <Megaphone className="w-4 h-4 text-accent" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-semibold text-ink truncate">
+                        Open Noticeboard
+                      </span>
+                    </div>
+                    <div className="text-[12px] text-muted truncate font-mono">
+                      College announcements & official notices (new tab)
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <ExternalLink className="w-3.5 h-3.5 text-muted group-hover:text-ink transition-colors" />
+                </div>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Footer shortcuts */}

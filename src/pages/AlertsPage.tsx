@@ -21,6 +21,7 @@ import {
   Calendar,
   User,
   ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { useCampus } from '../context/CampusContext';
 import { Alert, PriorityLevel, AlertStatus, AlertSourceCategory, DataSourceType } from '../types';
@@ -35,6 +36,7 @@ import { Toast, ToastType } from '../components/ui/Toast';
 import { AlertDetailSheet } from '../components/alerts/AlertDetailSheet';
 import { TableDensity } from '../components/ui/DataTable';
 import { formatTime } from '../utils/formatTime';
+import { NOTICEBOARD_URL } from '../constants';
 
 interface AlertsPageProps {
   onNavigate: (path: string) => void;
@@ -350,6 +352,17 @@ export const AlertsPage: React.FC<AlertsPageProps> = ({ onNavigate }) => {
           <p className="text-[14px] text-muted leading-relaxed max-w-3xl">
             Neutral, operationally-focused discrepancy log identifying divergence between academic timetables and physical telemetry.
           </p>
+          <div className="pt-1">
+            <a
+              href={NOTICEBOARD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[12px] font-mono text-accent hover:underline cursor-pointer"
+            >
+              <span>Publish a notice on the Noticeboard</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
 
         {/* Action / Quick Stats */}

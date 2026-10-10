@@ -54,13 +54,35 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
   const sensorList = [
     {
       id: 'pir',
-      name: 'Dual PIR Motion',
+      name: 'IR / motion sensor',
       icon: <Activity className="w-4 h-4 text-muted" />,
       value: motionActive ? 'Active (4 trg/m)' : 'Idle (0 triggers)',
       valueColor: motionActive ? 'text-status-green' : 'text-muted',
       sparkPoints: motionActive ? [0, 2, 4, 3, 5, 4] : [0, 0, 0, 0, 0, 0],
       source: 'SIMULATED' as const,
       installed: true,
+    },
+    {
+      id: 'arduino',
+      name: 'Arduino Uno',
+      icon: <Zap className="w-4 h-4 text-muted" />,
+      value: '--',
+      valueColor: 'text-muted font-mono',
+      sparkPoints: [0, 0, 0, 0, 0, 0],
+      source: 'SIMULATED' as const,
+      installed: true,
+      statusLabel: 'Not connected',
+    },
+    {
+      id: 'esp8266',
+      name: 'ESP8266',
+      icon: <Activity className="w-4 h-4 text-muted" />,
+      value: '--',
+      valueColor: 'text-muted font-mono',
+      sparkPoints: [0, 0, 0, 0, 0, 0],
+      source: 'SIMULATED' as const,
+      installed: true,
+      statusLabel: 'Not connected',
     },
     {
       id: 'lux',
@@ -94,7 +116,7 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
     },
     {
       id: 'ct-clamp',
-      name: 'CT Power Clamp (Branch Sub-Meter)',
+      name: 'CT power clamp',
       icon: <Zap className="w-4 h-4 text-muted" />,
       value: '--',
       valueColor: 'text-muted font-mono',
@@ -104,7 +126,7 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
     },
     {
       id: 'door',
-      name: 'Door Contact (Magnetic Reed Switch)',
+      name: 'Door contact',
       icon: <DoorClosed className="w-4 h-4 text-muted" />,
       value: '--',
       valueColor: 'text-muted font-mono',
@@ -114,7 +136,7 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
     },
     {
       id: 'iaq',
-      name: 'Air Quality (CO₂ / PM2.5 IAQ)',
+      name: 'Air quality',
       icon: <Wind className="w-4 h-4 text-muted" />,
       value: '--',
       valueColor: 'text-muted font-mono',
@@ -154,11 +176,15 @@ export const SensorsCard: React.FC<SensorsCardProps> = ({
                   <span className="font-medium text-ink block leading-none truncate">
                     {s.name}
                   </span>
-                  {!s.installed && (
+                  {(s as any).statusLabel ? (
+                    <span className="px-1.5 py-0.2 rounded text-[9.5px] font-mono font-semibold uppercase bg-surface border border-hairline text-muted shrink-0">
+                      {(s as any).statusLabel}
+                    </span>
+                  ) : !s.installed ? (
                     <span className="px-1.5 py-0.2 rounded text-[9.5px] font-mono font-semibold uppercase bg-surface border border-hairline text-muted shrink-0">
                       Not installed
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <span className={`font-mono text-[12px] font-semibold mt-1 block ${s.valueColor}`}>
                   {s.value}

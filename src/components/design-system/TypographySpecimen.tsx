@@ -79,7 +79,7 @@ export const TypographySpecimen: React.FC = () => {
                 14 Body · Inter Tight Regular
               </span>
               <div className="text-[14px] text-ink leading-normal max-w-2xl">
-                Classroom activity not confirmed for LH-302. Ceiling vision sensor registers headcount 0 while lighting circuits remain energized at 2.4 kW.
+                Classroom activity not confirmed for LH-302. Camera node registers headcount 0 while lighting circuits remain energized at 2.4 kW.
               </div>
             </div>
             <span className="text-[12px] font-mono text-muted">

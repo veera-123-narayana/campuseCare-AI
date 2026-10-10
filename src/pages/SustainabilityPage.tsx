@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
   Package,
+  Info,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { SourceBadge } from '../components/ui/SourceBadge';
@@ -20,11 +21,15 @@ interface SustainabilityPageProps {
 
 export type InputTag = 'MEASURED' | 'FROM LABEL' | 'ASSUMED';
 
+export type BOMStatus = 'Working' | 'Not tested' | 'Not connected';
+
 export interface BOMItem {
   id: string;
   name: string;
-  price: string; // starts blank
   condition: 'New' | 'Reused';
+  price: string; // starts blank
+  status: BOMStatus;
+  role: string;
 }
 
 export interface LimitationItem {
@@ -36,12 +41,12 @@ export interface LimitationItem {
 }
 
 const INITIAL_BOM: BOMItem[] = [
-  { id: 'bom-1', name: 'Raspberry Pi (model: enter)', price: '', condition: 'New' },
-  { id: 'bom-2', name: 'IR sensor', price: '', condition: 'New' },
-  { id: 'bom-3', name: 'Arduino Uno', price: '', condition: 'New' },
-  { id: 'bom-4', name: 'ESP8266', price: '', condition: 'New' },
-  { id: 'bom-5', name: 'phone/laptop camera', price: '', condition: 'Reused' },
-  { id: 'bom-6', name: 'jumper wires', price: '', condition: 'New' },
+  { id: 'bom-1', name: 'Raspberry Pi 4B', condition: 'New', price: '', status: 'Not tested', role: '' },
+  { id: 'bom-2', name: 'IR / motion sensor', condition: 'New', price: '', status: 'Not tested', role: '' },
+  { id: 'bom-3', name: 'Arduino Uno', condition: 'New', price: '', status: 'Not tested', role: '' },
+  { id: 'bom-4', name: 'ESP8266', condition: 'New', price: '', status: 'Not tested', role: '' },
+  { id: 'bom-5', name: 'Camera (phone / laptop / USB webcam)', condition: 'Reused', price: '', status: 'Not tested', role: '' },
+  { id: 'bom-6', name: 'Jumper wires', condition: 'New', price: '', status: 'Not tested', role: '' },
 ];
 
 const INITIAL_LIMITATIONS: LimitationItem[] = [
@@ -49,36 +54,36 @@ const INITIAL_LIMITATIONS: LimitationItem[] = [
     id: 'lim-1',
     title: 'Camera tested on laptop only',
     status: 'Not tested yet',
-    nextStep: 'Test on edge hardware node.',
-    helpNeeded: 'Hardware edge compute testing setup.',
+    nextStep: '',
+    helpNeeded: '',
   },
   {
     id: 'lim-2',
     title: 'Air quality simulated',
     status: 'Simulated values',
-    nextStep: 'Interface physical sensor hardware.',
-    helpNeeded: 'Hardware sensor module availability.',
+    nextStep: '',
+    helpNeeded: '',
   },
   {
     id: 'lim-3',
     title: 'Mains control not implemented',
     status: 'Not built',
-    nextStep: 'Undergo campus electrical safety review.',
-    helpNeeded: 'Certified electrician audit.',
+    nextStep: '',
+    helpNeeded: '',
   },
   {
     id: 'lim-4',
     title: 'ESP8266 not integrated',
     status: 'Not built',
-    nextStep: 'Configure wireless node networking.',
-    helpNeeded: 'Network configuration support.',
+    nextStep: '',
+    helpNeeded: '',
   },
   {
     id: 'lim-5',
     title: 'Low-light accuracy untested',
     status: 'Not tested yet',
-    nextStep: 'Benchmark accuracy in varied illumination.',
-    helpNeeded: 'Validation data collection.',
+    nextStep: '',
+    helpNeeded: '',
   },
 ];
 
@@ -178,9 +183,20 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = () => {
     );
   };
 
+  const handleUpdateBOMStatus = (id: string, status: BOMStatus) => {
+    setBomItems((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
+  };
+
+  const handleUpdateBOMRole = (id: string, role: string) => {
+    setBomItems((prev) => prev.map((item) => (item.id === id ? { ...item, role } : item)));
+  };
+
   const handleAddBOMRow = () => {
     const newId = `bom-${Date.now()}`;
-    setBomItems((prev) => [...prev, { id: newId, name: 'New Component', price: '', condition: 'New' }]);
+    setBomItems((prev) => [
+      ...prev,
+      { id: newId, name: 'New Component', price: '', condition: 'New', status: 'Not tested', role: '' },
+    ]);
   };
 
   const handleDeleteBOMRow = (id: string) => {
@@ -713,6 +729,8 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = () => {
                       <th className="pb-2 font-semibold">Component</th>
                       <th className="pb-2 font-semibold">Condition</th>
                       <th className="pb-2 font-semibold">Price (INR)</th>
+                      <th className="pb-2 font-semibold">Status</th>
+                      <th className="pb-2 font-semibold">Role in project</th>
                       <th className="pb-2 font-semibold text-right print:hidden">Action</th>
                     </tr>
                   </thead>
@@ -741,16 +759,36 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = () => {
                           </button>
                         </td>
                         <td className="py-2 pr-2">
-                          <div className="relative">
+                          <div className="relative min-w-[90px]">
                             <span className="absolute left-2 top-1.5 text-muted text-[12px]">₹</span>
                             <input
                               type="number"
                               value={item.price}
                               onChange={(e) => handleUpdateBOMPrice(item.id, e.target.value)}
-                              placeholder="Enter price..."
+                              placeholder=""
                               className="w-full pl-6 pr-2 py-1.5 rounded-[4px] bg-surface border border-hairline text-ink font-bold tabular-nums focus:outline-none focus:border-accent"
                             />
                           </div>
+                        </td>
+                        <td className="py-2 pr-2">
+                          <select
+                            value={item.status}
+                            onChange={(e) => handleUpdateBOMStatus(item.id, e.target.value as BOMStatus)}
+                            className="p-1.5 rounded-[4px] bg-surface border border-hairline text-[11px] font-mono text-ink focus:outline-none focus:border-accent"
+                          >
+                            <option value="Working">Working</option>
+                            <option value="Not tested">Not tested</option>
+                            <option value="Not connected">Not connected</option>
+                          </select>
+                        </td>
+                        <td className="py-2 pr-2">
+                          <input
+                            type="text"
+                            value={item.role}
+                            onChange={(e) => handleUpdateBOMRole(item.id, e.target.value)}
+                            placeholder="Role in project..."
+                            className="w-full p-1.5 rounded-[4px] bg-surface border border-hairline text-ink text-[11.5px] focus:outline-none focus:border-accent"
+                          />
                         </td>
                         <td className="py-2 text-right print:hidden">
                           <button
@@ -802,6 +840,14 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = () => {
             </CardHeader>
 
             <CardContent className="space-y-4">
+              {/* Honest camera disclosure */}
+              <div className="p-3 rounded-[6px] bg-surface-2 border border-hairline text-[12px] text-muted flex items-start gap-2.5">
+                <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                <span className="leading-relaxed">
+                  Headcount comes from face/person detection and may undercount; it is not attendance.
+                </span>
+              </div>
+
               {/* Add form */}
               {isAddingLimitation && (
                 <form onSubmit={handleAddLimitation} className="p-3 rounded-[8px] bg-surface-2 border border-accent space-y-2.5 print:hidden">

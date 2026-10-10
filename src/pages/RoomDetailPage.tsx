@@ -333,7 +333,7 @@ export const RoomDetailPage: React.FC<RoomDetailPageProps> = ({ roomId, onNaviga
             isPositive: headcount > 0,
           }}
           source={currentRoom?.source || 'SIMULATED'}
-          subtext="Ceiling camera vision count"
+          subtext="Camera node vision count"
         />
 
         {/* Metric 2: Expected State */}

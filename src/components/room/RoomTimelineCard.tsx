@@ -37,7 +37,7 @@ const defaultSteps: TimelineStep[] = [
   {
     time: '10:10:00',
     title: 'Configured Grace Period Exceeded',
-    detail: 'Configured 10-minute grace window expired without PIR motion sensor confirmation.',
+    detail: 'Configured 10-minute grace window expired without IR / motion sensor confirmation.',
     status: 'review',
     source: 'SIMULATED',
   },

@@ -186,7 +186,7 @@ export const IntelligenceResultCard: React.FC<IntelligenceResultCardProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted">Dual PIR Motion:</span>
+                  <span className="text-muted">IR / motion sensor:</span>
                   <span className="font-mono text-ink">{decision.observedMotion || '--'}</span>
                 </div>
                 <div className="flex justify-between">

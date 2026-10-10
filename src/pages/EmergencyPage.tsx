@@ -185,7 +185,7 @@ export const EmergencyPage: React.FC<EmergencyPageProps> = ({ onNavigate }) => {
       location: 'Room 102 · Main Block Level 1',
       requester: 'Kavya Raman',
       role: 'Student',
-      notes: 'Water leak from ceiling FCU near podium electrical distribution box.',
+      notes: 'Water leak from overhead FCU near podium electrical distribution box.',
       priority: 'YELLOW',
       status: 'Acknowledged',
       createdAt: Date.now() - 11 * 60 * 1000 - 15 * 1000, // 11m 15s ago

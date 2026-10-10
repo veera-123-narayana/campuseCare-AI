@@ -233,7 +233,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ onNavigate }) => {
             }
             delta={{ value: '97.0% connected', trend: 'neutral', isPositive: true }}
             source={devicesOnlineSource}
-            subtext="Edge Pi cameras & PIR nodes"
+            subtext="Camera nodes & IR / motion sensor nodes"
           />
         </div>
       </div>

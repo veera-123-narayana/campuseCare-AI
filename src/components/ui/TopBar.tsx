@@ -14,6 +14,7 @@ import { useCampus } from '../../context/CampusContext';
 import { ThemeToggle } from './ThemeToggle';
 import { PriorityPill } from './PriorityPill';
 import { formatTime } from '../../utils/formatTime';
+import { NOTICEBOARD_URL } from '../../constants';
 
 export interface TopBarProps {
   currentPath: string;
@@ -107,6 +108,18 @@ export const TopBar: React.FC<TopBarProps> = ({
             ⌘K
           </kbd>
         </button>
+
+        {/* Noticeboard Button */}
+        <a
+          href={NOTICEBOARD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center font-medium transition-colors select-none text-[13px] leading-none rounded-[8px] border border-hairline bg-surface-2 text-ink hover:bg-surface hover:border-muted/40 h-8 px-2.5 sm:px-3 gap-1.5 cursor-pointer"
+          title="Open Noticeboard (new tab)"
+        >
+          <span className="hidden sm:inline">Noticeboard</span>
+          <ExternalLink className="w-3.5 h-3.5 text-muted shrink-0" />
+        </a>
 
         {/* Data Mode Indicator (Non-interactive indicator; hidden dev toggle behind ?dev=1) */}
         <div

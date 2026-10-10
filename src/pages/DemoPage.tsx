@@ -111,11 +111,11 @@ const SCENARIOS: ScenarioConfig[] = [
     id: 'camera-offline',
     keyNumber: '7',
     title: 'Camera offline',
-    oneLineDescription: 'Ceiling camera RTSP stream offline; Campus Intelligence falls back to degraded PIR mode.',
+    oneLineDescription: 'Camera node RTSP stream offline; Campus Intelligence falls back to degraded IR / motion sensor mode.',
     targetSpace: 'Room 204',
     priority: 'YELLOW',
     category: 'Hardware',
-    payloadSummary: 'RTSP video stream lost · Vision confidence 0% · Degraded PIR fallback',
+    payloadSummary: 'RTSP video stream lost · Vision confidence 0% · Degraded IR / motion sensor fallback',
   },
   {
     id: 'energy-waste',
@@ -201,7 +201,7 @@ const GUIDED_DEMO_STEPS: GuidedDemoStep[] = [
     title: 'Scheduled Class Baseline',
     scenarioId: 'normal-class',
     caption:
-      'CS302 Distributed Systems is scheduled in Lecture Hall 204 (60 students). The ceiling camera node verifies normal attendance and HVAC is in comfort mode.',
+      'CS302 Distributed Systems is scheduled in Lecture Hall 204 (60 students). The Camera node verifies normal attendance and HVAC is in comfort mode.',
     actionNote: 'Baseline established · Green status verified',
   },
   {
@@ -895,10 +895,10 @@ export const DemoPage: React.FC<DemoPageProps> = ({ onNavigate }) => {
                 </div>
               </div>
 
-              {/* PIR Motion Toggle */}
+              {/* IR / Motion Sensor Toggle */}
               <div className="flex items-center justify-between p-3 rounded-[8px] bg-surface-2 border border-hairline">
                 <div>
-                  <span className="font-semibold text-ink block">PIR Motion Sensor</span>
+                  <span className="font-semibold text-ink block">IR / motion sensor</span>
                   <span className="text-[11px] font-mono text-muted">
                     {localMotion ? 'Motion detected (Pulse active)' : 'Idle (No activity for 5m)'}
                   </span>
